@@ -165,7 +165,7 @@ Run `/ai-status` to see:
 
 | Display Name | Technical ID |
 |--------------|--------------|
-| Claude Sonnet | `claude-sonnet-4-20250514` |
+| GPT-5.5 | `gpt-5.5` |
 | Kimi K2.5 | `moonshotai/kimi-k2.5` |
 | DeepSeek V3 | `deepseek/deepseek-chat` |
 | Gemini Flash | `google/gemini-2.0-flash-exp:free` |

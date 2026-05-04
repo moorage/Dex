@@ -36,7 +36,7 @@ Daily Planning:
 ├── dex-calendar-scout (Haiku) → Calendar + free blocks
 ├── dex-task-scout (Haiku) → Tasks + priorities
 ├── dex-week-scout (Haiku) → Week progress
-└── [Merge results] → Sonnet synthesis
+└── [Merge results] → GPT-5.5 synthesis
 ```
 
 **Result:** 15 seconds → 3 seconds (5x faster)
@@ -60,8 +60,8 @@ Automatically selects the optimal model:
 
 - **Simple lookups** → Haiku (fast, cheap)
 - **Task operations** → Haiku
-- **Analysis & planning** → Sonnet
-- **Complex reasoning** → Sonnet
+- **Analysis & planning** → GPT-5.5
+- **Complex reasoning** → GPT-5.5
 
 **Result:** 50-70% cost savings on routine operations
 
