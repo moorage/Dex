@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "15-20 minutes per review"
 ---
 
-# tech-debt
-
-Review and prioritize technical debt
-
 ## Purpose
 
 Inventory technical debt, assess impact/effort, and prioritize what to address.

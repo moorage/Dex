@@ -3,10 +3,6 @@ name: dex-improve
 description: Workshop an improvement idea into implementation plan
 ---
 
-# dex-improve
-
-Workshop an improvement idea into implementation plan
-
 ## What This Command Does
 
 **In plain English:** Your design partner for making Dex better. Three ways to use it:

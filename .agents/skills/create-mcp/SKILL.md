@@ -3,10 +3,6 @@ name: create-mcp
 description: Create new MCP integration with guided wizard
 ---
 
-# create-mcp
-
-Create new MCP integration with guided wizard
-
 ## What This Command Does
 
 **In plain English:** A guided wizard that helps you create and integrate an MCP server into Dex. No coding knowledge required - you describe what you want, we build it together.

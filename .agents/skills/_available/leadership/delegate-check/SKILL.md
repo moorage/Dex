@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "15-20 minutes per review"
 ---
 
-# delegate-check
-
-Review what should be delegated
-
 ## Purpose
 
 Identify delegation opportunities to focus on high-leverage leadership work.

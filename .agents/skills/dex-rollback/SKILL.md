@@ -3,10 +3,6 @@ name: dex-rollback
 description: Undo the last Dex update if something went wrong
 ---
 
-# dex-rollback
-
-Undo the last Dex update if something went wrong
-
 ## What This Command Does
 
 **Restores Dex to the version before your last update.** Use this if something broke after updating.

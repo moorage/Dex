@@ -3,10 +3,6 @@ name: dex-whats-new
 description: Check for system improvements (learnings + Codex updates)
 ---
 
-# dex-whats-new
-
-Check for system improvements (learnings + Codex updates)
-
 Check for improvements to your Dex system from TWO sources:
 1. **Learnings from your usage** - Mistakes, patterns, opportunities captured during sessions
 2. **New Codex capabilities** - Features that could enhance your workflows

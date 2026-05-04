@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "15-20 minutes weekly"
 ---
 
-# weekly-reflection
-
-Weekly synthesis of progress and priorities
-
 ## Purpose
 
 Weekly leadership reflection to maintain strategic focus and learn from the week.

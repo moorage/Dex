@@ -9,10 +9,6 @@ hooks:
       command: "node .codex/hooks/post-write-career-evidence.cjs"
 ---
 
-# career-coach
-
-Personal career coach with 4 modes: weekly reports, monthly reflections, self-reviews, promotion assessments
-
 ## Purpose
 
 Your personal career development coach. Brain dump about your work, reflect on challenges, and get coaching that adapts to your role and career level. Generates reports, reflections, self-reviews, and promotion assessments based on accumulated evidence.

@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "10-15 minutes per check"
 ---
 
-# close-status
-
-Month-end close checklist and blockers
-
 ## Purpose
 
 Track month-end close progress, identify blockers, and ensure timely completion.

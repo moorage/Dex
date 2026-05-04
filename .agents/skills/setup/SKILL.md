@@ -5,10 +5,6 @@ model_hint: fast
 disable-model-invocation: true
 ---
 
-# setup
-
-Initial Dex system setup and onboarding
-
 ---
 name: setup
 description: Set up your personal knowledge system with a simple conversation

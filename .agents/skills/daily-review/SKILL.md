@@ -4,10 +4,6 @@ description: End of day review with learning capture, daily plan completion trac
 context: fork
 ---
 
-# daily-review
-
-End of day review with learning capture, daily plan completion tracking, and meeting follow-up surfacing.
-
 ## Purpose
 
 Conduct an end-of-day review to capture progress, track what you actually accomplished vs. planned, surface meeting follow-ups, and set up tomorrow.

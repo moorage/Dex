@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "15-20 minutes per review"
 ---
 
-# expansion-opportunities
-
-Identify upsell/cross-sell opportunities
-
 ## Purpose
 
 Systematically identify and prioritize account expansion opportunities.

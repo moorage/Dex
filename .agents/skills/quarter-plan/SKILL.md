@@ -3,10 +3,6 @@ name: quarter-plan
 description: Set 3-5 strategic goals for the quarter
 ---
 
-# quarter-plan
-
-Set 3-5 strategic goals for the quarter
-
 ## Purpose
 
 Set 3-5 strategic goals for the quarter. Runs at the start of each quarter (or mid-quarter if starting fresh).

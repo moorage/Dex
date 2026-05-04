@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "30-45 minutes per board meeting"
 ---
 
-# board-prep
-
-Compile financial narrative for board meeting
-
 ## Purpose
 
 Compile comprehensive board materials with financial narrative, supporting context, and Q&A prep.

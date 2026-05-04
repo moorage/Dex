@@ -4,10 +4,6 @@ description: Review week's progress with concrete accomplishments (not fake perc
 context: fork
 ---
 
-# week-review
-
-Review week's progress with concrete accomplishments (not fake percentages), pattern detection, and goal tracking.
-
 ## Purpose
 
 Create a synthesis of the week reviewing activity, progress, and what was accomplished. **Uses concrete metrics, not vague percentages.**

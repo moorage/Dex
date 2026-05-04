@@ -3,10 +3,6 @@ name: integrate-mcp
 description: Integrate existing MCP servers from Smithery.ai or GitHub repositories
 ---
 
-# integrate-mcp
-
-Integrate existing MCP servers from Smithery.ai or GitHub repositories
-
 ## Purpose
 
 Help users discover and integrate pre-built MCP servers from the ecosystem, primarily from Smithery.ai marketplace.

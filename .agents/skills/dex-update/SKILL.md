@@ -3,10 +3,6 @@ name: dex-update
 description: Safely update Dex with one command (handles everything automatically)
 ---
 
-# dex-update
-
-Safely update Dex with one command (handles everything automatically)
-
 ## What This Command Does
 
 **For non-technical users:** Updates Dex to the latest version automatically. No command line knowledge needed - just run the command and follow the prompts.

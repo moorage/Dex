@@ -3,10 +3,6 @@ name: product-brief
 description: Extract product ideas through guided questions and generate PRD
 ---
 
-# product-brief
-
-Extract product ideas through guided questions and generate PRD
-
 ## Purpose
 
 Extract product ideas from your head through guided questioning, then generate a detailed Product Requirements Document (PRD). Designed for product people who have a vision but need help articulating it clearly.

@@ -4,10 +4,6 @@ description: Diagnose and fix Dex system health issues — MCP servers, config, 
 model_hint: fast
 ---
 
-# health-check
-
-Diagnose and fix Dex system health issues — MCP servers, config, recent errors
-
 ## Purpose
 
 Diagnose what's working, what's broken, and fix what can be fixed. This is Dex's self-repair system. It reads health data from pre-flight checks and error logs, translates technical failures into plain language, and offers specific fixes.

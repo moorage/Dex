@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "20-30 minutes per audit"
 ---
 
-# design-system-audit
-
-Review design system usage and gaps
-
 ## Purpose
 
 Audit design system health, identify gaps, and track adoption.

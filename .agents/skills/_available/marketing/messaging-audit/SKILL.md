@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "15-20 minutes per audit"
 ---
 
-# messaging-audit
-
-Review positioning and messaging across content
-
 ## Purpose
 
 Ensure messaging consistency across all content and identify where positioning needs tightening.

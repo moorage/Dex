@@ -24,6 +24,7 @@ Dex no longer relies on Claude Code or Cursor as the active runtime surface.
 * Tightened the Codex MCP drift checks to compare each server's full normalized env contract, and made `.codex/config.toml` plus `.codex/hooks.json` required distribution artifacts
 * Added release-gate validation that `.codex/hooks.json` only targets real repo-local hook scripts, and upgraded `SKILL.md` hygiene checks to parse YAML frontmatter instead of string-matching it
 * Restored the richer skill frontmatter metadata that was dropped during the `.claude` to `.agents` migration, including role/context/model/integration metadata and Codex-safe hook references
+* Removed synthetic top-level title/description preambles from migrated skills when those headings were not present in the original workflows, reducing token overhead and making upstream diffs easier to review
 * Moved Google, Notion, and Slack integration setup off `claude_desktop_config.json`
 * Deleted the retired `.claude/skills/` and `.claude/hooks/` trees after porting their active behavior into `.agents/skills/` and `.codex/hooks/`
 * Removed the last runtime compatibility bridges: `CLAUDE_MD`, the top-level `CLAUDE.md` root marker, and `Claude_Code_*` fallback reads

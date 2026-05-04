@@ -4,10 +4,6 @@ description: Toggle demo mode (see `docs/demo-mode.md`)
 disable-model-invocation: false
 ---
 
-# dex-demo
-
-Toggle demo mode (see `docs/demo-mode.md`)
-
 Toggle demo mode on/off, reset demo content, or launch interactive demo selector.
 
 ## Usage

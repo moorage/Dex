@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "15-20 minutes per decision"
 ---
 
-# decision-log
-
-Document major decisions made
-
 ## Purpose
 
 Maintain searchable log of major decisions with full context and rationale.

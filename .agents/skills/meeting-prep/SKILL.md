@@ -4,10 +4,6 @@ description: Prepare for meetings by gathering attendee context and related topi
 context: fork
 ---
 
-# meeting-prep
-
-Prepare for meetings by gathering attendee context and related topics
-
 Prepare for an upcoming meeting by gathering context on attendees and related topics.
 
 ## Tone Calibration

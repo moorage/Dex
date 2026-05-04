@@ -3,10 +3,6 @@ name: dex-level-up
 description: Discover unused Dex features based on your usage patterns
 ---
 
-# dex-level-up
-
-Discover unused Dex features based on your usage patterns
-
 ## Purpose
 
 Discover Dex capabilities you haven't used yet. No FOMO — this is your concierge showing you what's available so you can get full value from the system without missing features.

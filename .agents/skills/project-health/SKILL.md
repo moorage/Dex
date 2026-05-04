@@ -3,10 +3,6 @@ name: project-health
 description: Scan active projects for status, blockers, and next steps
 ---
 
-# project-health
-
-Scan active projects for status, blockers, and next steps
-
 Quick scan of all active projects to see what's stalled, blocked, or needs attention.
 
 ## What This Does

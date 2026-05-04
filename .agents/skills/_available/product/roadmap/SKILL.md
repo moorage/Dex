@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "10-15 minutes per review"
 ---
 
-# roadmap
-
-Review roadmap, surface blockers, check alignment with priorities
-
 ## Purpose
 
 Review your product roadmap holistically - surface blockers, identify stale initiatives, and ensure alignment with strategic priorities. This gives you a quick health check of all roadmap work.

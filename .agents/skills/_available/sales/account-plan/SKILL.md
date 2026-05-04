@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "20-30 minutes per account"
 ---
 
-# account-plan
-
-Create or update strategic account plan
-
 ## Purpose
 
 Create a comprehensive strategic account plan by gathering all context on an account and structuring it into a clear growth and relationship strategy.

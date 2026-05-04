@@ -4,10 +4,6 @@ description: Set weekly priorities and plan the week ahead with intelligent sugg
 context: fork
 ---
 
-# week-plan
-
-Set weekly priorities and plan the week ahead with intelligent suggestions based on goals, calendar shape, and task effort.
-
 ## Purpose
 
 Set priorities and plan the week ahead. Now with **intelligent priority suggestions** based on quarterly goals, calendar capacity, and task effort classification.

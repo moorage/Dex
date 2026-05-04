@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "20-30 minutes per campaign"
 ---
 
-# campaign-review
-
-Post-mortem on recent campaign
-
 ## Purpose
 
 Capture learnings from completed campaigns so you compound marketing knowledge and make better decisions next time.

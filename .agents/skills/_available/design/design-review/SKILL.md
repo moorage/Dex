@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "20-30 minutes per review"
 ---
 
-# design-review
-
-Prepare for or document design review
-
 ## Purpose
 
 Prepare for design reviews or document design decisions with full context.

@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "3-5 minutes per call"
 ---
 
-# call-prep
-
-Prepare for upcoming call with full context
-
 ## Purpose
 
 Quickly gather all relevant context before a call - recent conversations, open action items, account status, and suggested talking points.

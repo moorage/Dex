@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "20-30 minutes per decision"
 ---
 
-# architecture-decision
-
-Document architectural choices
-
 ## Purpose
 
 Document architecture decisions with context and rationale using Architecture Decision Records (ADR).

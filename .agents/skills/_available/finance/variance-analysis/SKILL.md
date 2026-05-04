@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "20-30 minutes per analysis"
 ---
 
-# variance-analysis
-
-Compare actuals vs budget with narrative
-
 ## Purpose
 
 Document budget variances with clear explanations and supporting context for leadership review.

@@ -3,10 +3,6 @@ name: dex-obsidian-setup
 description: Enable Obsidian integration and migrate existing vault to wiki links
 ---
 
-# dex-obsidian-setup
-
-Enable Obsidian integration and migrate existing vault to wiki links
-
 ## Purpose
 
 Convert Dex vault to Obsidian wiki link format for graph-based navigation.

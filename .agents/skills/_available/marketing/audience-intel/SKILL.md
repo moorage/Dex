@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "10-15 minutes per review"
 ---
 
-# audience-intel
-
-Synthesize what we're learning about our audience
-
 ## Purpose
 
 Aggregate audience insights from all sources to refine persona understanding and inform marketing strategy.

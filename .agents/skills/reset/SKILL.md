@@ -4,10 +4,6 @@ description: Restructure Dex system based on new role or preferences
 disable-model-invocation: true
 ---
 
-# reset
-
-Restructure Dex system based on new role or preferences
-
 ## Purpose
 
 Re-run the onboarding flow to restructure your Dex system. Useful when:

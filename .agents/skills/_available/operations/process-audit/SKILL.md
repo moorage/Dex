@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "20-30 minutes per process"
 ---
 
-# process-audit
-
-Review process health and bottlenecks
-
 ## Purpose
 
 Audit process health, identify bottlenecks, and recommend improvements.

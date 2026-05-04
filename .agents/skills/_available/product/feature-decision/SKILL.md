@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "15-20 minutes per decision"
 ---
 
-# feature-decision
-
-Framework for making feature prioritization decisions
-
 ## Purpose
 
 Make and document feature prioritization decisions with a structured framework. Ensures key factors are considered, stakeholders are consulted, and rationale is preserved for future reference.

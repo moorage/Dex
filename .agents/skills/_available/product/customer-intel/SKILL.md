@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "5-10 minutes per review"
 ---
 
-# customer-intel
-
-Synthesize recent customer feedback and pain points
-
 ## Purpose
 
 Aggregate and analyze customer feedback from all sources - meeting notes, person pages, feedback captures - to identify patterns, prioritize pain points, and inform product decisions.

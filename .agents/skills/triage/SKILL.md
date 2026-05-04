@@ -4,10 +4,6 @@ description: Strategically route orphaned files and extract scattered tasks
 model_hint: fast
 ---
 
-# triage
-
-Strategically route orphaned files and extract scattered tasks
-
 Cleanup and routing tool that finds standalone files and scattered tasks, then suggests where they belong using your current strategic context (Week Priorities + Quarterly Goals).
 
 ## Execution Style

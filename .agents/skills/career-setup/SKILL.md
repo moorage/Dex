@@ -4,10 +4,6 @@ description: Initialize career development system (job description, ladder, revi
 disable-model-invocation: true
 ---
 
-# career-setup
-
-Initialize career development system (job description, ladder, reviews, goals)
-
 ## Purpose
 
 Initialize your Career Development system in Dex. Captures your job description, career ladder, latest review, and long-term growth goals to create a foundation for ongoing career coaching.

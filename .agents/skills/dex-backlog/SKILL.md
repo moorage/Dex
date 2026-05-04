@@ -3,10 +3,6 @@ name: dex-backlog
 description: AI-powered ranking of Dex system improvement ideas
 ---
 
-# dex-backlog
-
-AI-powered ranking of Dex system improvement ideas
-
 ## What This Command Does
 
 **In plain English:** AI-powered ranking of your Dex system improvement backlog based on current system state. Shows you what to build next.

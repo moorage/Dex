@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "10-15 minutes per review"
 ---
 
-# content-calendar
-
-Review upcoming content and identify gaps
-
 ## Purpose
 
 Get a comprehensive view of your content pipeline - what's published, what's in progress, what's planned, and where the gaps are.

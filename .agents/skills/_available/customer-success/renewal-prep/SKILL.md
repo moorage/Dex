@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "20-30 minutes per renewal"
 ---
 
-# renewal-prep
-
-Prepare for upcoming renewal
-
 ## Purpose
 
 Prepare comprehensive renewal strategy with value summary, risk mitigation, and expansion opportunities.

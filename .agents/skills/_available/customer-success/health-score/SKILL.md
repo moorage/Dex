@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "10-15 minutes per review"
 ---
 
-# health-score
-
-Review account health across portfolio
-
 ## Purpose
 
 Monitor portfolio health, identify at-risk accounts, and prioritize proactive engagement.

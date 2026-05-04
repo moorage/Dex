@@ -3,10 +3,6 @@ name: prompt-improver
 description: Transform vague prompts into rich, structured prompts with automatic fallback
 ---
 
-# prompt-improver
-
-Transform vague prompts into rich, structured prompts with automatic fallback
-
 ## Purpose
 
 Transform vague, ambiguous prompts into rich, well-structured prompts. Uses Anthropic's prompt improvement capabilities when available, with graceful fallback to the current LLM.

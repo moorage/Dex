@@ -3,10 +3,6 @@ name: resume-builder
 description: Build resume and LinkedIn profile through guided interview
 ---
 
-# resume-builder
-
-Build resume and LinkedIn profile through guided interview
-
 ## Purpose
 
 Your personal resume coach and LinkedIn profile builder. Through guided interviews, extract your professional achievements and craft a compelling 2-page resume and LinkedIn profile that showcases measurable impact.

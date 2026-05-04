@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "10-15 minutes per review"
 ---
 
-# pipeline-health
-
-Analyze pipeline coverage and forecast accuracy
-
 ## Purpose
 
 Analyze pipeline coverage, conversion rates, velocity, and forecast accuracy to ensure you're on track to hit targets and identify where to focus attention.

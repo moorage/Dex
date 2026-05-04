@@ -3,10 +3,6 @@ name: save-insight
 description: Capture learnings from completed work for future reference
 ---
 
-# save-insight
-
-Capture learnings from completed work for future reference
-
 Capture what you learned from completing work. This is the "compound" step—making future similar work easier.
 
 ## Arguments

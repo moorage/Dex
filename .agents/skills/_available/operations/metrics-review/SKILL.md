@@ -9,10 +9,6 @@ jtbd: |
 time_investment: "10-15 minutes per review"
 ---
 
-# metrics-review
-
-Review key metrics and anomalies
-
 ## Purpose
 
 Monitor key metrics, identify anomalies, and document analysis.

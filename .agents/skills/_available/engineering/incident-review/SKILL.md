@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "30-45 minutes per incident"
 ---
 
-# incident-review
-
-Post-mortem on incidents
-
 ## Purpose
 
 Document incident learnings through structured post-mortem to prevent recurrence.

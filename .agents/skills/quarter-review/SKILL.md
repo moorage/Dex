@@ -3,10 +3,6 @@ name: quarter-review
 description: Review quarter completion and capture learnings
 ---
 
-# quarter-review
-
-Review quarter completion and capture learnings
-
 ## Purpose
 
 Review and synthesize the quarter that just ended. Evaluates goal completion, captures learnings, and suggests focus for next quarter.

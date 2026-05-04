@@ -10,10 +10,6 @@ jtbd: |
 time_investment: "5-10 minutes per review"
 ---
 
-# deal-review
-
-Review active deals and surface risks
-
 ## Purpose
 
 Get a comprehensive view of your deal pipeline health - identify at-risk deals, surface blockers, and ensure every deal has clear next steps.

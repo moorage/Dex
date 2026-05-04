@@ -3,10 +3,6 @@ name: ai-setup
 description: Configure AI model options - budget cloud models (save 80%+) and offline mode (use Dex without internet)
 ---
 
-# ai-setup
-
-Configure AI model options - budget cloud models (save 80%+) and offline mode (use Dex without internet)
-
 ## Purpose
 
 Help users configure alternative AI models for Dex:
