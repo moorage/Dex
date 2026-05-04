@@ -49,15 +49,15 @@ elif command -v python >/dev/null 2>&1; then
 fi
 
 if [ -z "$PYTHON_CMD" ]; then
-    echo "Python 3.10+ is required. Install it from https://www.python.org/downloads/ and rerun ./install.sh."
+    echo "Python 3.11+ is required. Install it from https://www.python.org/downloads/ and rerun ./install.sh."
     exit 1
 fi
 
 PYTHON_VERSION=$($PYTHON_CMD --version | cut -d' ' -f2)
 PYTHON_MAJOR=$(echo "$PYTHON_VERSION" | cut -d'.' -f1)
 PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d'.' -f2)
-if [ "$PYTHON_MAJOR" -ne 3 ] || [ "$PYTHON_MINOR" -lt 10 ]; then
-    echo "Python 3.10+ is required. Found $PYTHON_VERSION."
+if [ "$PYTHON_MAJOR" -ne 3 ] || [ "$PYTHON_MINOR" -lt 11 ]; then
+    echo "Python 3.11+ is required. Found $PYTHON_VERSION."
     exit 1
 fi
 echo "Python: $PYTHON_VERSION"

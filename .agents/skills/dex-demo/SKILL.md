@@ -1,3 +1,8 @@
+---
+name: "dex-demo"
+description: "Toggle demo mode (see `docs/demo-mode.md`)"
+---
+
 # dex-demo
 
 Toggle demo mode (see `docs/demo-mode.md`)

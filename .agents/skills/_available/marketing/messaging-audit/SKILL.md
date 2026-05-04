@@ -1,3 +1,8 @@
+---
+name: "messaging-audit"
+description: "Review positioning and messaging across content"
+---
+
 # messaging-audit
 
 Review positioning and messaging across content

@@ -15,7 +15,7 @@ The active surfaces in this repo are:
 
 - `git`
 - `node` 18+
-- `python` 3.10+
+- `python` 3.11+
 - `codex`
 
 Install Codex CLI with one of:
@@ -106,7 +106,9 @@ Codex plugin packaging now lives in:
 
 - `.codex-plugin/plugin.json`
 
-Use that as the installable Codex surface.
+That plugin bundle is intentionally skills-only.
+
+For the full Dex runtime, including hooks, onboarding automation, and MCP servers, clone the repo and run `./install.sh`.
 
 ## Contributing
 

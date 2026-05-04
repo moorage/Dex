@@ -50,6 +50,28 @@ test('post-write-career-evidence captures evidence from touched career file', ()
   assert.match(evidenceLog, /\[\[Wins\]\]/);
 });
 
+test('post-write-career-evidence supports Write payloads with direct file paths', () => {
+  const root = makeTempProject('dex-career-write-hook');
+  const careerFile = path.join(root, '05-Areas/Career/Promotion.md');
+  fs.writeFileSync(careerFile, '# Promotion\n\nDelivered a 2x improvement in pipeline coverage.\n');
+
+  const result = runHook(
+    'post-write-career-evidence.cjs',
+    {
+      cwd: root,
+      tool_name: 'Write',
+      tool_input: {
+        path: '05-Areas/Career/Promotion.md',
+      },
+    },
+    root,
+  );
+
+  assert.equal(result.status, 0);
+  const evidenceLog = fs.readFileSync(path.join(root, '05-Areas/Career/Evidence_Log.md'), 'utf-8');
+  assert.match(evidenceLog, /\[\[Promotion\]\]/);
+});
+
 test('post-write-meeting-person-update appends meeting reference to matching person page', () => {
   const root = makeTempProject('dex-meeting-hook');
   const meetingFile = path.join(root, '00-Inbox/Meetings/TestMeeting.md');
@@ -73,4 +95,29 @@ test('post-write-meeting-person-update appends meeting reference to matching per
   assert.equal(result.status, 0);
   const updatedPersonPage = fs.readFileSync(personFile, 'utf-8');
   assert.match(updatedPersonPage, /\[\[TestMeeting\]\]/);
+});
+
+test('post-write-meeting-person-update supports Edit payloads with direct file paths', () => {
+  const root = makeTempProject('dex-meeting-edit-hook');
+  const meetingFile = path.join(root, '00-Inbox/Meetings/PlanningSync.md');
+  const personFile = path.join(root, '05-Areas/People/Internal/Jane_Doe.md');
+
+  fs.writeFileSync(meetingFile, '# Planning Sync\n\nMet with [[Jane_Doe]] about the roadmap.\n');
+  fs.writeFileSync(personFile, '# Jane Doe\n\n## Recent Meetings\n');
+
+  const result = runHook(
+    'post-write-meeting-person-update.cjs',
+    {
+      cwd: root,
+      tool_name: 'Edit',
+      tool_input: {
+        filePath: '00-Inbox/Meetings/PlanningSync.md',
+      },
+    },
+    root,
+  );
+
+  assert.equal(result.status, 0);
+  const updatedPersonPage = fs.readFileSync(personFile, 'utf-8');
+  assert.match(updatedPersonPage, /\[\[PlanningSync\]\]/);
 });

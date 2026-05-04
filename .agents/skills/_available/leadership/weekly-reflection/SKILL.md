@@ -1,3 +1,8 @@
+---
+name: "weekly-reflection"
+description: "Weekly synthesis of progress and priorities"
+---
+
 # weekly-reflection
 
 Weekly synthesis of progress and priorities

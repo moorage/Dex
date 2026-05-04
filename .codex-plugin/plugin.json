@@ -1,7 +1,7 @@
 {
   "name": "dex-by-dave",
   "version": "1.20.0",
-  "description": "Codex-first Dex distribution with repo skills, hooks, and onboarding for strategic work management.",
+  "description": "Codex-first Dex skill bundle for strategic work management.",
   "author": {
     "name": "Dave Killeen",
     "url": "https://github.com/davekilleen"
@@ -18,12 +18,10 @@
     "career-development"
   ],
   "skills": "./.agents/skills/",
-  "hooks": "./.codex/hooks.json",
-  "mcpServers": "./.mcp.plugin.json",
   "interface": {
     "displayName": "Dex by Dave",
     "shortDescription": "Personal operating system for Codex.",
-    "longDescription": "Dex combines role-aware onboarding, meeting intelligence, relationship memory, task workflows, and repo-local MCP tooling for Codex.",
+    "longDescription": "Dex bundles role-aware skills for meeting intelligence, relationship memory, planning workflows, and onboarding guidance. The full Dex runtime stays repo-local through AGENTS.md, .codex/, and install.sh.",
     "developerName": "Dave Killeen",
     "category": "Productivity",
     "capabilities": [

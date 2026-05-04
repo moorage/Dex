@@ -1,3 +1,8 @@
+---
+name: "close-status"
+description: "Month-end close checklist and blockers"
+---
+
 # close-status
 
 Month-end close checklist and blockers

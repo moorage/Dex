@@ -11,6 +11,28 @@ echo ""
 ERRORS=0
 WARNINGS=0
 
+resolve_python_cmd() {
+    local candidate
+    for candidate in python3 python; do
+        if ! command -v "$candidate" >/dev/null 2>&1; then
+            continue
+        fi
+
+        if "$candidate" - <<'PY' >/dev/null 2>&1
+import sys
+raise SystemExit(0 if sys.version_info >= (3, 11) else 1)
+PY
+        then
+            echo "$candidate"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+PYTHON_CMD=""
+
 # Check 1: Verify .mcp.json is not tracked
 echo "✓ Checking .mcp.json is gitignored..."
 if git ls-files --error-unmatch .mcp.json 2>/dev/null; then
@@ -82,7 +104,7 @@ fi
 # Check 6: Verify critical files exist
 echo ""
 echo "✓ Checking critical distribution files..."
-REQUIRED_FILES=("README.md" ".gitignore" "install.sh" ".mcp.json.example" ".mcp.plugin.json" "env.example" "AGENTS.md" ".codex-plugin/plugin.json")
+REQUIRED_FILES=("README.md" ".gitignore" "install.sh" ".mcp.json.example" "env.example" "AGENTS.md" ".codex/config.toml" ".codex/hooks.json" ".codex-plugin/plugin.json")
 for file in "${REQUIRED_FILES[@]}"; do
     if [ ! -f "$file" ]; then
         echo "  ❌ ERROR: Missing required file: $file"
@@ -164,24 +186,149 @@ else
     echo "  ✅ Versions match: $PKG_VERSION"
 fi
 
-# Check 13: All MCP servers in .mcp.json.example exist as files
+# Check 13: Resolve a supported Python runtime for validation helpers
 echo ""
-echo "✓ Checking MCP server files exist..."
-MCP_MISSING=0
-if [ -f ".mcp.json.example" ]; then
-    for server_path in $(grep -o '"[^"]*run-dex-mcp\.cjs"' .mcp.json.example | tr -d '"' | sed 's|{{VAULT_PATH}}/||'); do
-        if [ ! -f "$server_path" ]; then
-            echo "  ❌ ERROR: MCP launcher missing: $server_path"
-            MCP_MISSING=$((MCP_MISSING + 1))
-        fi
-    done
-    if [ $MCP_MISSING -gt 0 ]; then
-        ERRORS=$((ERRORS + MCP_MISSING))
-    else
-        echo "  ✅ MCP launcher file exists"
-    fi
+echo "✓ Resolving Python runtime for validation..."
+if PYTHON_CMD=$(resolve_python_cmd); then
+    echo "  ✅ Using $PYTHON_CMD"
 else
-    echo "  ⚠️  WARNING: .mcp.json.example not found"
+    echo "  ❌ ERROR: Python 3.11+ is required for distribution validation"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# Check 14: Template and repo-local MCP runtime stay in sync
+echo ""
+echo "✓ Checking MCP template and repo-local runtime targets..."
+if [ -n "$PYTHON_CMD" ] && [ -f ".mcp.json.example" ] && [ -f ".codex/config.toml" ]; then
+    if MCP_VALIDATION_OUTPUT=$("$PYTHON_CMD" - <<'PY' 2>&1
+import json
+from pathlib import Path
+import sys
+import tomllib
+
+repo_root = Path('.')
+template_servers = json.loads((repo_root / '.mcp.json.example').read_text(encoding='utf-8')).get('mcpServers', {})
+runtime_servers = tomllib.loads((repo_root / '.codex/config.toml').read_text(encoding='utf-8')).get('mcp_servers', {})
+errors = []
+
+def normalize_template_env(env):
+    normalized = dict(env)
+    if normalized.get('VAULT_PATH') == '{{VAULT_PATH}}':
+        normalized['VAULT_PATH'] = '.'
+    return normalized
+
+if set(template_servers) != set(runtime_servers):
+    errors.append("template and .codex/config.toml server inventories diverged")
+
+launcher_path = repo_root / 'core' / 'scripts' / 'run-dex-mcp.cjs'
+if not launcher_path.is_file():
+    errors.append("missing launcher core/scripts/run-dex-mcp.cjs")
+
+for server_name, template_config in template_servers.items():
+    runtime_config = runtime_servers.get(server_name)
+    if runtime_config is None:
+        continue
+
+    template_args = template_config.get('args') or []
+    runtime_args = runtime_config.get('args') or []
+
+    if len(template_args) != 2:
+        errors.append(f"{server_name}: template args must stay launcher + filename only")
+        continue
+    if len(runtime_args) != 2:
+        errors.append(f"{server_name}: runtime args must stay launcher + filename only")
+        continue
+
+    if template_config.get('command') != 'node':
+        errors.append(f"{server_name}: template command drifted from node")
+    if runtime_config.get('command') != 'node':
+        errors.append(f"{server_name}: runtime command drifted from node")
+    if template_args[0] != '{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs':
+        errors.append(f"{server_name}: template launcher drifted: {template_args[0]}")
+    if runtime_args[0] != './core/scripts/run-dex-mcp.cjs':
+        errors.append(f"{server_name}: runtime launcher drifted: {runtime_args[0]}")
+
+    template_env = template_config.get('env') or {}
+    runtime_env = runtime_config.get('env') or {}
+    normalized_template_env = normalize_template_env(template_env)
+    if runtime_env != normalized_template_env:
+        errors.append(
+            f"{server_name}: runtime env drifted from template: {runtime_env} != {normalized_template_env}"
+        )
+    if runtime_config.get('cwd') != '.':
+        errors.append(f"{server_name}: runtime cwd drifted from .")
+
+    server_filename = template_args[1]
+    server_path_obj = Path(server_filename)
+    if server_path_obj.is_absolute():
+        errors.append(f"{server_name}: absolute MCP server paths are not allowed: {server_filename}")
+        continue
+    if '..' in server_path_obj.parts:
+        errors.append(f"{server_name}: parent-directory MCP server paths are not allowed: {server_filename}")
+        continue
+    if len(server_path_obj.parts) != 1:
+        errors.append(f"{server_name}: MCP server must stay a bare filename: {server_filename}")
+        continue
+
+    if runtime_args[1] != server_filename:
+        errors.append(f"{server_name}: runtime server filename drifted from template: {runtime_args[1]} != {server_filename}")
+
+    server_path = repo_root / 'core' / 'mcp' / server_filename
+    if not server_path.is_file():
+        errors.append(f"{server_name}: missing MCP server core/mcp/{server_filename}")
+
+if errors:
+    print('\n'.join(errors))
+    sys.exit(1)
+PY
+    ); then
+        echo "  ✅ MCP template and repo-local runtime stay in sync"
+    else
+        echo "  ❌ ERROR: MCP template or repo-local runtime drifted:"
+        echo "$MCP_VALIDATION_OUTPUT" | sed 's/^/     /'
+        ERRORS=$((ERRORS + 1))
+    fi
+elif [ -z "$PYTHON_CMD" ]; then
+    echo "  ℹ️  INFO: Skipping MCP validation because no supported Python runtime was found"
+else
+    echo "  ❌ ERROR: .mcp.json.example or .codex/config.toml not found"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# Check 15: Plugin manifest stays inside the supported skills-only boundary
+echo ""
+echo "✓ Checking plugin manifest support boundary..."
+if [ -n "$PYTHON_CMD" ] && [ -f ".codex-plugin/plugin.json" ]; then
+    if PLUGIN_VALIDATION_OUTPUT=$("$PYTHON_CMD" - <<'PY' 2>&1
+import json
+from pathlib import Path
+import sys
+
+manifest = json.loads(Path('.codex-plugin/plugin.json').read_text(encoding='utf-8'))
+errors = []
+
+if manifest.get('skills') != './.agents/skills/':
+    errors.append("plugin manifest must point skills at ./.agents/skills/")
+if 'hooks' in manifest:
+    errors.append("plugin manifest must not bundle hooks")
+if 'mcpServers' in manifest:
+    errors.append("plugin manifest must not bundle MCP servers")
+
+if errors:
+    print('\n'.join(errors))
+    sys.exit(1)
+PY
+    ); then
+        echo "  ✅ Plugin manifest uses the supported skills-only surface"
+    else
+        echo "  ❌ ERROR: Plugin manifest exceeds the supported skills-only surface:"
+        echo "$PLUGIN_VALIDATION_OUTPUT" | sed 's/^/     /'
+        ERRORS=$((ERRORS + 1))
+    fi
+elif [ -z "$PYTHON_CMD" ]; then
+    echo "  ℹ️  INFO: Skipping plugin manifest validation because no supported Python runtime was found"
+else
+    echo "  ⚠️  WARNING: .codex-plugin/plugin.json not found"
     WARNINGS=$((WARNINGS + 1))
 fi
 

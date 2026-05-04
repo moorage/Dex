@@ -1,3 +1,8 @@
+---
+name: "triage"
+description: "Strategically route orphaned files and extract scattered tasks"
+---
+
 # triage
 
 Strategically route orphaned files and extract scattered tasks

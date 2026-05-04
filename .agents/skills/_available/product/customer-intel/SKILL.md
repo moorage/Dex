@@ -1,3 +1,8 @@
+---
+name: "customer-intel"
+description: "Synthesize recent customer feedback and pain points"
+---
+
 # customer-intel
 
 Synthesize recent customer feedback and pain points

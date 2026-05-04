@@ -1,3 +1,8 @@
+---
+name: "product-brief"
+description: "Extract product ideas through guided questions and generate PRD"
+---
+
 # product-brief
 
 Extract product ideas through guided questions and generate PRD

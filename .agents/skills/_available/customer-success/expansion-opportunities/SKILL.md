@@ -1,3 +1,8 @@
+---
+name: "expansion-opportunities"
+description: "Identify upsell/cross-sell opportunities"
+---
+
 # expansion-opportunities
 
 Identify upsell/cross-sell opportunities

@@ -44,7 +44,7 @@ Completed outcomes:
 - `AGENTS.md` is the canonical project instruction file.
 - `.codex/config.toml`, `.codex/hooks.json`, and `.codex/hooks/*` are the active Codex hook/config surfaces.
 - root `.mcp.json` and `.mcp.json.example` are the canonical repo-local MCP config artifacts.
-- `.codex-plugin/plugin.json` plus `.mcp.plugin.json` provide a Codex-native packaging surface.
+- `.codex-plugin/plugin.json` provides an optional skills-only plugin surface; the authoritative Dex runtime remains repo-local through `AGENTS.md`, `.codex/`, and root `.mcp.json.example`.
 - onboarding no longer edits `CLAUDE.md` and now writes mutable state into `System/` artifacts.
 - first-party Dex workflows now have Codex skill entrypoints under `.agents/skills/`.
 - integration setup no longer writes `claude_desktop_config.json`.
@@ -58,7 +58,7 @@ The open migration decisions were resolved as follows:
 - Canonical instruction surface: `AGENTS.md`.
 - Canonical mutable profile/config surfaces: `System/user-profile.yaml`, `System/pillars.yaml`, root `.mcp.json`.
 - Hook substrate: `.codex/config.toml` + `.codex/hooks.json` + `.codex/hooks/*`.
-- Packaging: in scope and completed via `.codex-plugin/plugin.json` plus `.mcp.plugin.json`.
+- Packaging: in scope and completed via `.codex-plugin/plugin.json`, with plugin support intentionally limited to skills while hooks and MCP remain repo-local runtime surfaces.
 - First-party skill coverage: completed in `.agents/skills/`, with direct Codex ports where available and Codex entrypoint wrappers for the remaining first-party legacy skills.
 - Optional/vendor skill surfaces: `_available` and `anthropic-*` remain outside the active Codex product surface.
 
@@ -78,6 +78,8 @@ These are the external constraints this migration has to respect.
 - Codex plugins use `.codex-plugin/plugin.json`; bundled `skills/`, `.mcp.json`, and `hooks/hooks.json` live at the plugin root, not inside `.codex-plugin/`.
   - https://developers.openai.com/codex/plugins/build#plugin-structure
   - https://developers.openai.com/codex/plugins/build#bundled-mcp-servers-and-lifecycle-config
+- Codex hook commands run with the session `cwd`, so Dex does not currently ship bundled plugin hooks or MCP launcher configs that assume a stable plugin-root runtime path.
+  - https://developers.openai.com/codex/hooks
 
 ## Executive Summary
 

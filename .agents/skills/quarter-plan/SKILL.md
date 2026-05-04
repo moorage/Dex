@@ -1,3 +1,8 @@
+---
+name: "quarter-plan"
+description: "Set 3-5 strategic goals for the quarter"
+---
+
 # quarter-plan
 
 Set 3-5 strategic goals for the quarter

@@ -1,3 +1,8 @@
+---
+name: "pipeline-health"
+description: "Analyze pipeline coverage and forecast accuracy"
+---
+
 # pipeline-health
 
 Analyze pipeline coverage and forecast accuracy

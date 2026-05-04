@@ -1,3 +1,8 @@
+---
+name: "week-plan"
+description: "Set weekly priorities and plan the week ahead with intelligent suggestions based on goals, calendar shape, and task effort."
+---
+
 # week-plan
 
 Set weekly priorities and plan the week ahead with intelligent suggestions based on goals, calendar shape, and task effort.

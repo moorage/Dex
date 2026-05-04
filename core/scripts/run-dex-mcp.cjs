@@ -47,7 +47,7 @@ function spawnServer(serverPath, candidates, attempt = 0) {
   if (attempt >= candidates.length) {
     console.error(
       'Dex MCP launcher could not find a usable Python runtime. ' +
-      'Run ./install.sh to create .venv or install Python 3.10+.'
+      'Run ./install.sh to create .venv or install Python 3.11+.'
     );
     process.exit(1);
   }

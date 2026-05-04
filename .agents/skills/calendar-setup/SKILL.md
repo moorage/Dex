@@ -1,3 +1,8 @@
+---
+name: "calendar-setup"
+description: "**Purpose:** Grant Python calendar access for 30x faster calendar queries (30s \u2192 <1s)"
+---
+
 # Calendar Setup - Enable Fast Queries
 
 **Purpose:** Grant Python calendar access for 30x faster calendar queries (30s → <1s)

@@ -1,3 +1,8 @@
+---
+name: "feature-decision"
+description: "Framework for making feature prioritization decisions"
+---
+
 # feature-decision
 
 Framework for making feature prioritization decisions

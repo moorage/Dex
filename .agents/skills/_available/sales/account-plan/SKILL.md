@@ -1,3 +1,8 @@
+---
+name: "account-plan"
+description: "Create or update strategic account plan"
+---
+
 # account-plan
 
 Create or update strategic account plan

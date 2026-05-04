@@ -1,3 +1,8 @@
+---
+name: "atlassian-setup"
+description: "Connect your Jira and Confluence to Dex so your daily plans, project health checks, meeting prep, and weekly reviews get richer context from your Atlassian workspace."
+---
+
 # Atlassian Setup
 
 Connect your Jira and Confluence to Dex so your daily plans, project health checks, meeting prep, and weekly reviews get richer context from your Atlassian workspace.

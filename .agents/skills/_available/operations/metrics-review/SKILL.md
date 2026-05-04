@@ -1,3 +1,8 @@
+---
+name: "metrics-review"
+description: "Review key metrics and anomalies"
+---
+
 # metrics-review
 
 Review key metrics and anomalies

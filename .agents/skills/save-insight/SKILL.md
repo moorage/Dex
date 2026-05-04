@@ -1,3 +1,8 @@
+---
+name: "save-insight"
+description: "Capture learnings from completed work for future reference"
+---
+
 # save-insight
 
 Capture learnings from completed work for future reference

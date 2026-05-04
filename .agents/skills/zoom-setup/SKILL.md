@@ -1,3 +1,8 @@
+---
+name: "zoom-setup"
+description: "Connect your Zoom account to Dex so your meeting prep, reviews, and process-meetings workflows get direct access to Zoom recordings, transcripts, and scheduling."
+---
+
 # Zoom Setup
 
 Connect your Zoom account to Dex so your meeting prep, reviews, and process-meetings workflows get direct access to Zoom recordings, transcripts, and scheduling.

@@ -1,3 +1,8 @@
+---
+name: "review"
+description: "End of day review with learning capture. Integrates with evening journaling if enabled."
+---
+
 # review
 
 End of day review with learning capture. Integrates with evening journaling if enabled.

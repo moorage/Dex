@@ -1,3 +1,8 @@
+---
+name: "board-prep"
+description: "Compile financial narrative for board meeting"
+---
+
 # board-prep
 
 Compile financial narrative for board meeting

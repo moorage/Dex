@@ -1,3 +1,8 @@
+---
+name: "things-setup"
+description: "Connect Things 3 to Dex for bi-directional task sync. No account needed. Everything stays on your Mac. Works offline."
+---
+
 # Things 3 Setup
 
 Connect Things 3 to Dex for bi-directional task sync. No account needed. Everything stays on your Mac. Works offline.

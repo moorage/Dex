@@ -1,3 +1,8 @@
+---
+name: "decision-log"
+description: "Document major decisions made"
+---
+
 # decision-log
 
 Document major decisions made

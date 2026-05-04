@@ -1,3 +1,8 @@
+---
+name: "daily-review"
+description: "End of day review with learning capture, daily plan completion tracking, and meeting follow-up surfacing."
+---
+
 # daily-review
 
 End of day review with learning capture, daily plan completion tracking, and meeting follow-up surfacing.

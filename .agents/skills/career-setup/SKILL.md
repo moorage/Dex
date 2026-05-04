@@ -1,3 +1,8 @@
+---
+name: "career-setup"
+description: "Initialize career development system (job description, ladder, reviews, goals)"
+---
+
 # career-setup
 
 Initialize career development system (job description, ladder, reviews, goals)

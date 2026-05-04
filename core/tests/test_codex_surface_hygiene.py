@@ -77,7 +77,6 @@ def _active_surface_paths() -> list[Path]:
         REPO_ROOT / ".codex" / "config.toml",
         REPO_ROOT / ".codex" / "hooks.json",
         REPO_ROOT / ".codex-plugin" / "plugin.json",
-        REPO_ROOT / ".mcp.plugin.json",
         REPO_ROOT / "System" / "Dex_Backlog.md",
         REPO_ROOT / "System" / "pillars.yaml",
         REPO_ROOT / "System" / "pillars.example.yaml",
@@ -91,6 +90,39 @@ def _active_surface_paths() -> list[Path]:
     paths.extend((REPO_ROOT / "core" / "scripts").rglob("*.cjs"))
     paths.extend((REPO_ROOT / "core" / "utils").glob("preflight.py"))
     return [path for path in paths if path.is_file()]
+
+
+def _load_mcp_template_servers() -> dict:
+    import json
+
+    template_path = REPO_ROOT / ".mcp.json.example"
+    template = json.loads(template_path.read_text(encoding="utf-8"))
+    return template["mcpServers"]
+
+
+def _load_codex_runtime_servers() -> dict:
+    import tomllib
+
+    config_path = REPO_ROOT / ".codex" / "config.toml"
+    config = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    return config["mcp_servers"]
+
+
+def _assert_safe_mcp_server_filename(server_name: str, server_filename: str) -> None:
+    server_path = Path(server_filename)
+    assert not server_path.is_absolute(), f"{server_name} uses an absolute MCP server path: {server_filename}"
+    assert ".." not in server_path.parts, f"{server_name} uses a parent-directory MCP server path: {server_filename}"
+    assert len(server_path.parts) == 1, f"{server_name} must reference a bare MCP server filename: {server_filename}"
+    assert (REPO_ROOT / "core" / "mcp" / server_filename).is_file(), (
+        f"{server_name} references missing MCP server: core/mcp/{server_filename}"
+    )
+
+
+def _normalize_template_mcp_env(env: dict[str, str]) -> dict[str, str]:
+    normalized = dict(env)
+    if normalized.get("VAULT_PATH") == "{{VAULT_PATH}}":
+        normalized["VAULT_PATH"] = "."
+    return normalized
 
 
 def test_first_party_codex_skill_inventory_matches_expected():
@@ -128,30 +160,49 @@ def test_active_codex_surfaces_do_not_point_at_removed_legacy_runtime_features()
     assert not offenders, "Found disallowed legacy runtime references:\n" + "\n".join(offenders)
 
 
-def test_codex_plugin_manifest_bundles_mcp_servers():
+def test_codex_plugin_manifest_is_skills_only():
     manifest_path = REPO_ROOT / ".codex-plugin" / "plugin.json"
-    plugin_mcp_path = REPO_ROOT / ".mcp.plugin.json"
 
     manifest_text = manifest_path.read_text(encoding="utf-8")
-    plugin_mcp_text = plugin_mcp_path.read_text(encoding="utf-8")
 
-    assert '"mcpServers": "./.mcp.plugin.json"' in manifest_text
-    for server_name in (
-        "work-mcp",
-        "calendar-mcp",
-        "granola-mcp",
-        "career-mcp",
-        "dex-improvements-mcp",
-        "resume-mcp",
-        "update-checker",
-        "onboarding-mcp",
-        "dex-analytics",
-        "session-memory",
-        "beta-mcp",
-        "commitment-mcp",
-        "demo-mode-mcp",
-    ):
-        assert f'"{server_name}"' in plugin_mcp_text
+    assert '"skills": "./.agents/skills/"' in manifest_text
+    assert '"hooks"' not in manifest_text
+    assert '"mcpServers"' not in manifest_text
+
+
+def test_mcp_template_and_repo_local_runtime_stay_in_lockstep():
+    template_servers = _load_mcp_template_servers()
+    runtime_servers = _load_codex_runtime_servers()
+
+    assert set(template_servers) == set(runtime_servers), "Template and .codex/config.toml server inventories diverged"
+
+    for server_name, template_config in template_servers.items():
+        runtime_config = runtime_servers[server_name]
+
+        template_args = template_config["args"]
+        runtime_args = runtime_config["args"]
+        assert len(template_args) == 2, f"{server_name} template args must stay launcher + filename only"
+        assert len(runtime_args) == 2, f"{server_name} runtime args must stay launcher + filename only"
+
+        assert template_config["command"] == "node", f"{server_name} template command drifted"
+        assert runtime_config["command"] == "node", f"{server_name} runtime command drifted"
+        assert template_args[0] == "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs", (
+            f"{server_name} template launcher path drifted: {template_args[0]}"
+        )
+        assert runtime_args[0] == "./core/scripts/run-dex-mcp.cjs", (
+            f"{server_name} runtime launcher path drifted: {runtime_args[0]}"
+        )
+        assert (REPO_ROOT / "core" / "scripts" / "run-dex-mcp.cjs").is_file()
+
+        template_env = template_config.get("env") or {}
+        runtime_env = runtime_config.get("env") or {}
+        assert runtime_env == _normalize_template_mcp_env(template_env), (
+            f"{server_name} runtime env drifted from template: {runtime_env} != {_normalize_template_mcp_env(template_env)}"
+        )
+        assert runtime_config["cwd"] == ".", f"{server_name} runtime cwd drifted"
+
+        assert runtime_args[1] == template_args[1], f"{server_name} runtime/server filename drifted from template"
+        _assert_safe_mcp_server_filename(server_name, template_args[1])
 
 
 def test_execplan_convention_doc_exists():
@@ -168,3 +219,26 @@ def test_wrapper_migration_is_complete():
     ]
 
     assert not offenders, f"Wrapper-based skill migrations still remain: {offenders}"
+
+
+def test_all_codex_skill_files_have_valid_top_level_frontmatter():
+    offenders: list[str] = []
+
+    for skill_path in CODEX_SKILLS_DIR.rglob("SKILL.md"):
+        text = skill_path.read_text(encoding="utf-8")
+        if not text.startswith("---\n"):
+            offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> missing opening frontmatter delimiter")
+            continue
+
+        try:
+            _, frontmatter, _ = text.split("---\n", 2)
+        except ValueError:
+            offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> missing closing frontmatter delimiter")
+            continue
+
+        if f'name: "{skill_path.parent.name}"' not in frontmatter and f"name: {skill_path.parent.name}" not in frontmatter:
+            offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> frontmatter name does not match folder")
+        if "description:" not in frontmatter:
+            offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> missing frontmatter description")
+
+    assert not offenders, "Invalid Codex skill frontmatter:\n" + "\n".join(offenders)

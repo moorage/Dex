@@ -1,3 +1,8 @@
+---
+name: "trello-setup"
+description: "Connect your Trello boards to Dex so your tasks, projects, and daily plans stay in sync with your Trello Kanban boards."
+---
+
 # Trello Setup
 
 Connect your Trello boards to Dex so your tasks, projects, and daily plans stay in sync with your Trello Kanban boards.

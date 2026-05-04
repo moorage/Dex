@@ -1,3 +1,8 @@
+---
+name: "variance-analysis"
+description: "Compare actuals vs budget with narrative"
+---
+
 # variance-analysis
 
 Compare actuals vs budget with narrative

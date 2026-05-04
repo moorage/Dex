@@ -1,3 +1,8 @@
+---
+name: "google-workspace-setup"
+description: "Connect your Google Workspace to Dex so your daily plans, meeting prep, and weekly reviews get richer context from email, Google Calendar, and Docs."
+---
+
 # Google Workspace Setup
 
 Connect your Google Workspace to Dex so your daily plans, meeting prep, and weekly reviews get richer context from email, Google Calendar, and Docs.

@@ -18,6 +18,10 @@ Dex no longer relies on Claude Code or Cursor as the active runtime surface.
 * Added a real Codex onboarding skill at `.agents/skills/onboarding`
 * Rewrote the install flow, README, distribution notes, and active skill guidance for Codex
 * Added `.codex-plugin/plugin.json` as the active plugin packaging surface
+* Narrowed `.codex-plugin/plugin.json` to a skills-only bundle after validating that Codex hook commands run with the session `cwd`, which makes bundled Dex runtime scripts unsafe without a documented plugin-root runtime contract
+* Raised the documented and enforced Python floor to `3.11+` so Dex's TOML-based Codex config validation matches the supported runtime
+* Updated `scripts/verify-distribution.sh` to resolve `python3` or `python` dynamically with a real version check before running Python-based validation
+* Tightened the Codex MCP drift checks to compare each server's full normalized env contract, and made `.codex/config.toml` plus `.codex/hooks.json` required distribution artifacts
 * Moved Google, Notion, and Slack integration setup off `claude_desktop_config.json`
 * Deleted the retired `.claude/skills/` and `.claude/hooks/` trees after porting their active behavior into `.agents/skills/` and `.codex/hooks/`
 * Removed the last runtime compatibility bridges: `CLAUDE_MD`, the top-level `CLAUDE.md` root marker, and `Claude_Code_*` fallback reads

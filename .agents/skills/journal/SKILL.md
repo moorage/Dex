@@ -1,3 +1,8 @@
+---
+name: "journal"
+description: "Toggle journaling or start a journal entry (morning/evening/weekly)"
+---
+
 # journal
 
 Toggle journaling or start a journal entry (morning/evening/weekly)

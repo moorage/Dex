@@ -1,3 +1,8 @@
+---
+name: "renewal-prep"
+description: "Prepare for upcoming renewal"
+---
+
 # renewal-prep
 
 Prepare for upcoming renewal

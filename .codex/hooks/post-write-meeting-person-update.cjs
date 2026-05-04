@@ -10,7 +10,8 @@ try {
   skip(error.message);
 }
 
-if (input?.tool_name !== 'apply_patch') {
+const WRITE_TOOL_NAMES = new Set(['apply_patch', 'Write', 'Edit']);
+if (!WRITE_TOOL_NAMES.has(input?.tool_name)) {
   skip('non-write-tool');
 }
 

@@ -1,3 +1,8 @@
+---
+name: "quarter-review"
+description: "Review quarter completion and capture learnings"
+---
+
 # quarter-review
 
 Review quarter completion and capture learnings

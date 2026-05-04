@@ -1,3 +1,8 @@
+---
+name: "campaign-review"
+description: "Post-mortem on recent campaign"
+---
+
 # campaign-review
 
 Post-mortem on recent campaign

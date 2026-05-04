@@ -1,3 +1,8 @@
+---
+name: "career-coach"
+description: "Personal career coach with 4 modes: weekly reports, monthly reflections, self-reviews, promotion assessments"
+---
+
 # career-coach
 
 Personal career coach with 4 modes: weekly reports, monthly reflections, self-reviews, promotion assessments

@@ -1,3 +1,8 @@
+---
+name: "reset"
+description: "Restructure Dex system based on new role or preferences"
+---
+
 # reset
 
 Restructure Dex system based on new role or preferences

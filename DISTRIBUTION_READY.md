@@ -27,7 +27,7 @@ These should not be committed.
 - repo-local skills live under `.agents/skills/`
 - the installer now renders root `.mcp.json` from `.mcp.json.example`
 - integration setup writes to Dex's local MCP config instead of a host-specific desktop config
-- Codex plugin packaging lives in `.codex-plugin/`
+- `.codex-plugin/` now provides an optional skills-only plugin bundle; repo-local hooks and MCP stay in the cloned Dex workspace
 
 ## Validation checklist
 

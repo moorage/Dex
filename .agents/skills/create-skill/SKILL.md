@@ -1,3 +1,8 @@
+---
+name: "create-skill"
+description: "Create your own skill that's protected from Dex updates."
+---
+
 # Create Custom Skill
 
 Create your own skill that's protected from Dex updates.

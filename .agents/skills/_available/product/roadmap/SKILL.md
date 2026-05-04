@@ -1,3 +1,8 @@
+---
+name: "roadmap"
+description: "Review roadmap, surface blockers, check alignment with priorities"
+---
+
 # roadmap
 
 Review roadmap, surface blockers, check alignment with priorities

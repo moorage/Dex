@@ -1,3 +1,8 @@
+---
+name: "delegate-check"
+description: "Review what should be delegated"
+---
+
 # delegate-check
 
 Review what should be delegated

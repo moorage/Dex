@@ -1,3 +1,8 @@
+---
+name: "deal-review"
+description: "Review active deals and surface risks"
+---
+
 # deal-review
 
 Review active deals and surface risks

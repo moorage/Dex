@@ -1,3 +1,8 @@
+---
+name: "prompt-improver"
+description: "Transform vague prompts into rich, structured prompts with automatic fallback"
+---
+
 # prompt-improver
 
 Transform vague prompts into rich, structured prompts with automatic fallback

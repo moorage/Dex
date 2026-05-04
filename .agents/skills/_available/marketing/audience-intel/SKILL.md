@@ -1,3 +1,8 @@
+---
+name: "audience-intel"
+description: "Synthesize what we're learning about our audience"
+---
+
 # audience-intel
 
 Synthesize what we're learning about our audience

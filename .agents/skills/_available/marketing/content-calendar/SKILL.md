@@ -1,3 +1,8 @@
+---
+name: "content-calendar"
+description: "Review upcoming content and identify gaps"
+---
+
 # content-calendar
 
 Review upcoming content and identify gaps

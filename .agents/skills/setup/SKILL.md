@@ -1,3 +1,8 @@
+---
+name: "setup"
+description: "Initial Dex system setup and onboarding"
+---
+
 # setup
 
 Initial Dex system setup and onboarding

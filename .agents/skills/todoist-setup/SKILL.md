@@ -1,3 +1,8 @@
+---
+name: "todoist-setup"
+description: "Connect your Todoist account to Dex so tasks stay in sync across both systems. Create a task in Dex and it appears in Todoist. Complete one in Todoist and Dex knows about it."
+---
+
 # Todoist Setup
 
 Connect your Todoist account to Dex so tasks stay in sync across both systems. Create a task in Dex and it appears in Todoist. Complete one in Todoist and Dex knows about it.

@@ -1,3 +1,8 @@
+---
+name: "ms-teams-setup"
+description: "Connect your Microsoft Teams workspace to Dex so your daily plans, meeting prep, and people pages get richer context from Teams conversations."
+---
+
 # Teams Setup
 
 Connect your Microsoft Teams workspace to Dex so your daily plans, meeting prep, and people pages get richer context from Teams conversations.

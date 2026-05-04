@@ -1,3 +1,8 @@
+---
+name: "meeting-prep"
+description: "Prepare for meetings by gathering attendee context and related topics"
+---
+
 # meeting-prep
 
 Prepare for meetings by gathering attendee context and related topics

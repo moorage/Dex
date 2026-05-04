@@ -1,3 +1,8 @@
+---
+name: "integrate-mcp"
+description: "Integrate existing MCP servers from Smithery.ai or GitHub repositories"
+---
+
 # integrate-mcp
 
 Integrate existing MCP servers from Smithery.ai or GitHub repositories

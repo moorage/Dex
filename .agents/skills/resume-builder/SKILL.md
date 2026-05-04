@@ -1,3 +1,8 @@
+---
+name: "resume-builder"
+description: "Build resume and LinkedIn profile through guided interview"
+---
+
 # resume-builder
 
 Build resume and LinkedIn profile through guided interview

@@ -1,3 +1,8 @@
+---
+name: "tech-debt"
+description: "Review and prioritize technical debt"
+---
+
 # tech-debt
 
 Review and prioritize technical debt

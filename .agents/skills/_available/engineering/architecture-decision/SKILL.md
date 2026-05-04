@@ -1,3 +1,8 @@
+---
+name: "architecture-decision"
+description: "Document architectural choices"
+---
+
 # architecture-decision
 
 Document architectural choices

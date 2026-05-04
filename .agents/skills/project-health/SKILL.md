@@ -1,3 +1,8 @@
+---
+name: "project-health"
+description: "Scan active projects for status, blockers, and next steps"
+---
+
 # project-health
 
 Scan active projects for status, blockers, and next steps

@@ -1,3 +1,8 @@
+---
+name: "design-review"
+description: "Prepare for or document design review"
+---
+
 # design-review
 
 Prepare for or document design review

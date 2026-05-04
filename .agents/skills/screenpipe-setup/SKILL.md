@@ -1,3 +1,8 @@
+---
+name: "screenpipe-setup"
+description: "Enable ambient work intelligence - Dex learns what you're working on via screen OCR."
+---
+
 # ScreenPipe Setup
 
 Enable ambient work intelligence - Dex learns what you're working on via screen OCR.

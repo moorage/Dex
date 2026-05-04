@@ -1,3 +1,8 @@
+---
+name: "week-review"
+description: "Review week's progress with concrete accomplishments (not fake percentages), pattern detection, and goal tracking."
+---
+
 # week-review
 
 Review week's progress with concrete accomplishments (not fake percentages), pattern detection, and goal tracking.

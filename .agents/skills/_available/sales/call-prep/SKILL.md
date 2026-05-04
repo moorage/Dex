@@ -1,3 +1,8 @@
+---
+name: "call-prep"
+description: "Prepare for upcoming call with full context"
+---
+
 # call-prep
 
 Prepare for upcoming call with full context

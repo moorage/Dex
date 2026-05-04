@@ -1,3 +1,8 @@
+---
+name: "beta-status"
+description: "Show all activated beta features and their current status."
+---
+
 # Beta Status
 
 Show all activated beta features and their current status.
