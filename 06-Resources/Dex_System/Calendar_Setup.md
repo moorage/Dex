@@ -8,7 +8,7 @@ This guide is for **Mac users** who use **Google Calendar** and want Dex to show
 
 ## How it works in one sentence
 
-Dex reads your calendar from the **Calendar app** that came with your Mac. So you add your Google account to that app once, let Cursor use it, and Dex sees your meetings.
+Dex reads your calendar from the **Calendar app** that came with your Mac. So you add your Google account to that app once, let the app you use to run Codex use it, and Dex sees your meetings.
 
 ---
 
@@ -26,16 +26,16 @@ Dex doesn't talk to Google directly. It uses the built-in **Calendar** app on yo
 
 Your Google events will now appear in the Calendar app. Once they're here, Dex can see them too.
 
-### Step 2: Let Cursor use your calendar
+### Step 2: Let your Codex host app use your calendar
 
 macOS only lets apps see your calendar if you allow it.
 
 1. Open **System Settings** (or **System Preferences** on older macOS).
 2. Go to **Privacy & Security** → **Calendars**.
-3. Find **Cursor** in the list and turn it **On**.
-4. Click **Cursor** and set access to **Full** (not "Add Only") so Dex can read your events.
+3. Find the macOS app you use to run Codex in the list and turn it **On**.
+4. Set its access to **Full** (not "Add Only") so Dex can read your events.
 
-The first time Cursor tries to read your calendar, macOS may show a popup: **"Cursor would like to access your calendars"**. Click **Allow**.
+The first time Codex tries to read your calendar through that app, macOS may show a calendar-access prompt. Click **Allow**.
 
 **Done.** Run `/daily-plan` or ask "what's on my calendar today?" — your Google meetings (including recurring ones) should show on the right days.
 
@@ -45,8 +45,8 @@ The first time Cursor tries to read your calendar, macOS may show a popup: **"Cu
 
 | What you see | What to do |
 |--------------|------------|
-| **"Calendar access denied"** | Go to **System Settings** → **Privacy & Security** → **Calendars**, turn **Cursor** on, then click **Cursor** and set access to **Full** (not "Add Only"). Quit Cursor and open it again. |
-| **No meetings or wrong dates for recurring events** | Make sure you did both steps above. If you installed Dex without running the installer (e.g. you installed Python packages yourself), open Terminal and run: `pip3 install --user pyobjc-framework-EventKit`, then restart Cursor. |
+| **"Calendar access denied"** | Go to **System Settings** → **Privacy & Security** → **Calendars**, turn the app you use to run Codex on, then grant it and set access to **Full** (not "Add Only"). Quit that app and open it again. |
+| **No meetings or wrong dates for recurring events** | Make sure you did both steps above. If you installed Dex without running the installer (e.g. you installed Python packages yourself), open Terminal and run: `pip3 install --user pyobjc-framework-EventKit`, then restart that app. |
 | **Calendar is empty or very slow** | Same as above: both setup steps, and if you didn't run the installer, run the `pip3 install` line above. |
 
 ---
@@ -60,6 +60,6 @@ If you have several calendars and want Dex to focus on one (e.g. your work calen
 ## Summary
 
 1. **Add Google to the Calendar app** — Calendar → Add Account → Google → sign in.
-2. **Allow Cursor to access Calendars** — System Settings → Privacy & Security → Calendars → Cursor On, then click Cursor and choose **Full** access (not "Add Only").
+2. **Allow your Codex host app to access Calendars** — System Settings → Privacy & Security → Calendars → the app On, then click the app and choose **Full** access (not "Add Only").
 
 After that, your Google Calendar meetings show up in Dex on the right days, including recurring events.

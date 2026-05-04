@@ -57,13 +57,13 @@ class DateTimeEncoder(json.JSONEncoder):
 
 # Configuration - Vault paths
 BASE_DIR = Path(os.environ.get('VAULT_PATH', Path.cwd()))
-BETA_FEATURES_FILE = BASE_DIR / '.claude' / 'config' / 'beta-features.yaml'
-BETA_TEMPLATES_DIR = BASE_DIR / '.claude' / 'reference' / 'beta-templates'
+BETA_FEATURES_FILE = BASE_DIR / 'System' / 'beta-features.yaml'
+PI_BETA_DOCS_DIR = BASE_DIR / 'docs' / 'beta' / 'pi'
 USER_PROFILE_FILE = BASE_DIR / 'System' / 'user-profile.yaml'
 
 
 def setup_pi_integration() -> bool:
-    """Set up Pi integration when activated - creates .pi/ folder, installs Pi, and documentation"""
+    """Set up Pi integration when activated."""
     import subprocess
 
     try:
@@ -101,7 +101,7 @@ def setup_pi_integration() -> bool:
         (pi_dir / 'prompts').mkdir(parents=True, exist_ok=True)
 
         # Copy AGENTS.md if template exists
-        agents_template = BETA_TEMPLATES_DIR / 'pi' / 'AGENTS.md'
+        agents_template = PI_BETA_DOCS_DIR / 'AGENTS.md'
         agents_dest = pi_dir / 'AGENTS.md'
         if agents_template.exists() and not agents_dest.exists():
             import shutil
@@ -123,51 +123,17 @@ You are working in a Dex vault - a personal knowledge management system.
 - Preserve existing file formats and conventions
 """)
 
-        # Copy MCP bridge extension if template exists
-        bridge_template = BETA_TEMPLATES_DIR / 'pi' / 'dex-mcp-bridge.ts'
-        bridge_dest = pi_dir / 'extensions' / 'dex-mcp-bridge.ts'
-        if bridge_template.exists() and not bridge_dest.exists():
-            import shutil
-            shutil.copy(bridge_template, bridge_dest)
-
         # Create System/Beta/pi/ with documentation
         beta_dir = BASE_DIR / 'System' / 'Beta' / 'pi'
         beta_dir.mkdir(parents=True, exist_ok=True)
 
         # Copy documentation templates
         for doc_file in ['README.md', 'changelog.md', 'troubleshooting.md', 'examples.md']:
-            template = BETA_TEMPLATES_DIR / 'pi' / doc_file
+            template = PI_BETA_DOCS_DIR / doc_file
             dest = beta_dir / doc_file
             if template.exists() and not dest.exists():
                 import shutil
                 shutil.copy(template, dest)
-
-        # Copy Pi-related skills to user's skills folder
-        skills_template_dir = BETA_TEMPLATES_DIR / 'pi' / 'skills'
-        skills_dest_dir = BASE_DIR / '.claude' / 'skills'
-        if skills_template_dir.exists():
-            import shutil
-            for skill_dir in skills_template_dir.iterdir():
-                if skill_dir.is_dir():
-                    dest_skill_dir = skills_dest_dir / skill_dir.name
-                    if not dest_skill_dir.exists():
-                        shutil.copytree(skill_dir, dest_skill_dir)
-                        logger.info(f"Copied Pi skill: {skill_dir.name}")
-
-        # Copy Pi-related hooks to user's hooks folder
-        hooks_template_dir = BETA_TEMPLATES_DIR / 'pi' / 'hooks'
-        hooks_dest_dir = BASE_DIR / '.claude' / 'hooks'
-        if hooks_template_dir.exists():
-            hooks_dest_dir.mkdir(parents=True, exist_ok=True)
-            import shutil
-            for hook_file in hooks_template_dir.iterdir():
-                if hook_file.is_file() and hook_file.suffix in ['.cjs', '.js', '.sh']:
-                    dest_hook = hooks_dest_dir / hook_file.name
-                    if not dest_hook.exists():
-                        shutil.copy(hook_file, dest_hook)
-                        # Make executable
-                        dest_hook.chmod(dest_hook.stat().st_mode | 0o111)
-                        logger.info(f"Copied Pi hook: {hook_file.name}")
 
         logger.info("Pi integration setup complete")
         return True

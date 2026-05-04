@@ -2,7 +2,7 @@
 """
 Post-Update Integration Check
 
-Runs after /dex-update to:
+Runs after $dex-update to:
 1. Detect new integration features
 2. Check if user has existing MCP configs that could be upgraded
 3. Offer setup for new integrations
@@ -96,7 +96,7 @@ def check_upgradeable_integrations() -> Tuple[bool, str]:
 def get_post_update_integration_message() -> str:
     """
     Get the full post-update integration message.
-    Called by /dex-update after successful update.
+    Called by $dex-update after a successful update.
     """
     messages = []
     

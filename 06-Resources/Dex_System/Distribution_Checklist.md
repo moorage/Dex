@@ -50,7 +50,7 @@ All shipped with Dex in `core/mcp/`:
 
 ### External MCPs (NOT part of Dex)
 
-These are user-installed separately via Claude Desktop/Cursor settings:
+These are user-installed separately via local Codex MCP configuration or other client settings:
 
 - `cursor-ide-browser` — Browser automation
 - `user-granola` — Official Granola MCP (different from dex granola-mcp)
@@ -153,7 +153,7 @@ Before pushing to GitHub:
 - [ ] Fresh clone on different machine
 - [ ] Run `./install.sh` with no prior Dex installation
 - [ ] Verify `.mcp.json` generates with correct paths
-- [ ] Run setup wizard: `/setup` in Cursor
+- [ ] Run setup wizard: `/setup` in Codex
 - [ ] Test without Granola installed (graceful degradation)
 - [ ] Test on Windows if supporting (install.sh needs .bat version)
 
@@ -182,7 +182,7 @@ Before pushing to GitHub:
 
 ### Setup Flow
 
-1. **First install:** No `.env` file — everything works through Cursor
+1. **First install:** No `.env` file — everything works through Codex
 2. **Optional:** Run `/setup` → answers "Enable automatic meeting processing?"
 3. **If yes:** System creates `.env` from template, prompts for API key
 4. **If no:** Skip entirely — manual meeting processing works fine

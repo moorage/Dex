@@ -8,7 +8,7 @@
 
 ```
 Morning    → Run /daily-plan for context-aware daily planning
-During day → Just tell Claude things - it routes them intelligently
+During day → Just tell Codex things - it routes them intelligently
 After mtgs → Dex extracts action items and updates person pages
 As needed  → /triage finds orphaned files and scattered tasks
 End of day → Run /daily-review
@@ -29,13 +29,13 @@ End of week → Run /week-review
 
 **Conversational Capture:**
 
-Just tell Claude things naturally:
+Just tell Codex things naturally:
 
 | What You Do | What Happens |
 |-------------|--------------|
-| "Sarah was worried about timeline but interested in Q2 pilot" | Claude suggests: "Add to Sarah's person page and Q2 Planning project?" |
+| "Sarah was worried about timeline but interested in Q2 pilot" | Codex suggests: "Add to Sarah's person page and Q2 Planning project?" |
 | "Create a task to finalize mobile app pricing" | Work MCP validates, checks duplicates, writes to Tasks.md |
-| "Random idea: could we automate weekly reports?" | Claude suggests where to file it based on your priorities |
+| "Random idea: could we automate weekly reports?" | Codex suggests where to file it based on your priorities |
 
 The system uses your Week Priorities and Quarterly Goals to route intelligently in real-time.
 
@@ -82,8 +82,8 @@ All skills are documented in detail in the **Skills System** section below. Here
 2. Optional: `/meeting-prep` — Prepare for first meeting
 
 **During Day:**
-- Tell Claude things naturally → it routes intelligently based on your priorities
-- "Sarah worried about timeline" → Claude suggests person page + project routing
+- Tell Codex things naturally → it routes intelligently based on your priorities
+- "Sarah worried about timeline" → Codex suggests person page + project routing
 - "Create task to finalize pricing" → Work MCP validates and adds to Tasks.md
 
 **End of Day:**
@@ -137,7 +137,7 @@ When you run `/dex-demo on`, you'll see a menu of **12 validated demo scenarios*
 - **Career Development (10-11):** Career system, career coach
 - **System Evolution (12):** Learning & backlog
 
-See `.claude/reference/demo-scenarios.md` for detailed scenario descriptions.
+See `docs/demo-scenarios.md` for detailed scenario descriptions.
 
 ### Demo Content
 
@@ -251,7 +251,7 @@ Triage is a cleanup tool that finds orphaned files and scattered tasks, then rou
 - Scattered `- [ ]` tasks across multiple notes
 - Periodic cleanup and routing
 
-**Note:** For most capture, just tell Claude things conversationally. Triage is for cleanup, not primary workflow.
+**Note:** For most capture, just tell Codex things conversationally. Triage is for cleanup, not primary workflow.
 
 ### How It Works
 
@@ -370,7 +370,7 @@ Dex/
 │   └── pillars.yaml          # Your strategic pillars
 │
 ├── Tasks.md                  # Main task list
-└── CLAUDE.md                 # System configuration
+└── AGENTS.md                 # Codex project instructions
 ```
 
 ---
@@ -512,8 +512,8 @@ Dex treats itself as a product you're continuously improving. Ideas compound, th
 
 Behind the scenes, Dex runs two quiet background checks:
 
-**Checking for Claude Updates (every 6 hours)**  
-Dex checks if Anthropic has released new Claude Code features. When it finds something new, you'll see a heads-up next time you start working: "🆕 New Claude Code features detected! Run `/dex-whats-new` to review."
+**Checking for Codex Updates (every 6 hours)**  
+Dex checks if OpenAI has released new Codex features. When it finds something new, you'll see a heads-up next time you start working: "🆕 New Codex features detected! Run `/dex-whats-new` to review."
 
 **Learning Review Prompts (daily at 5pm)**  
 As you work, Dex captures learnings in `System/Session_Learnings/`. When you accumulate 5+ learnings that haven't been reviewed yet, Dex reminds you: "📚 You have 7 pending learnings from this week. Worth reviewing?"
@@ -545,7 +545,7 @@ Every session builds on the last. The system remembers so you don't have to.
 ### Why Automation Matters
 
 Without automation, learning requires discipline. You have to remember to:
-- Check for Claude updates
+- Check for Codex updates
 - Review your learnings
 - Update your preferences
 - Apply past lessons
@@ -567,9 +567,9 @@ With automation, Dex nudges you at the right time. The system improves itself th
 When you're reading any file that mentions people or companies, Dex quietly:
 - Looks up their person page or company page
 - Loads recent meeting history, action items, and relationship notes
-- Makes that information available to Claude in the background
+- Makes that information available to Codex in the background
 
-You don't see any headers or popups - it just works. When you ask "What did Sarah and I discuss last week?", Claude already knows because it loaded her context automatically.
+You don't see any headers or popups - it just works. When you ask "What did Sarah and I discuss last week?", Codex already knows because it loaded her context automatically.
 
 **Example:** You open a meeting note from a customer call. The note mentions "Acme Corp." Dex automatically loads the Acme Corp company page, sees you've had 5 meetings with them in the past month, notices there are 3 open action items, and uses that context to help you prepare better.
 
@@ -778,8 +778,8 @@ These aren't installed by default because not everyone needs them. When you're r
 Skills in `_available/` are not loaded by default. To install:
 1. Run `/dex-level-up` to see available skills for your role
 2. Select skills you want
-3. Dex moves them from `_available/` to active `.claude/skills/`
-4. Skill is immediately available with `/skill-name`
+3. Dex exposes them from `.agents/skills/_available/` into the active `.agents/skills/` surface
+4. Skill is immediately available with `$skill-name`
 
 ---
 
@@ -821,7 +821,7 @@ Skills are reusable AI workflows invoked with `/skill-name`. All skills follow t
 - `/dex-level-up` — Discover unused features based on usage patterns
 - `/dex-backlog` — AI-powered ranking of improvement ideas
 - `/dex-improve` — Workshop an idea into implementation plan
-- `/dex-whats-new` — Check for system improvements (learnings + Claude updates)
+- `/dex-whats-new` — Check for system improvements (learnings + Codex updates)
 - `/create-mcp` — Create new MCP integration with guided wizard
 - `/dex-demo` — Toggle demo mode on/off/reset
 - `/setup` — Initial onboarding (one-time)
@@ -858,7 +858,7 @@ Skills are reusable AI workflows invoked with `/skill-name`. All skills follow t
 
 ### How Skills Work
 
-Skills define consistent behaviors Claude follows. When you type `/skill-name`, Claude reads the skill file at `.claude/skills/[skill-name]/SKILL.md` and follows its instructions.
+Skills define consistent behaviors Codex follows. When you invoke `$skill-name`, Codex reads the skill file at `.agents/skills/[skill-name]/SKILL.md` and follows its instructions.
 
 ---
 
@@ -920,7 +920,7 @@ Meetings with attendees from these email domains will appear in Meeting History.
 
 ### How Skills Work
 
-Skills define consistent behaviors Claude follows. When a skill is relevant, Claude applies its protocol automatically.
+Skills define consistent behaviors Codex follows. When a skill is relevant, Codex applies its protocol automatically.
 
 ---
 
@@ -1034,7 +1034,7 @@ Dex processes meetings from Granola to extract structured insights, action items
 
 #### Manual Processing (Recommended to Start)
 
-Run `/process-meetings` whenever you want to pull in new meetings. Uses Claude directly — no API key required.
+Run `/process-meetings` whenever you want to pull in new meetings. Uses Codex directly — no API key required.
 
 **Basic commands:**
 
@@ -1146,7 +1146,7 @@ For hands-off processing, enable automatic mode during onboarding or configure m
 
 **Automatic mode:**
 - Runs every 30 minutes via macOS Launch Agent
-- Processes new meetings even when Cursor is closed
+- Processes new meetings even when Codex is closed
 - Generates daily digests with cross-meeting themes
 
 **Manual commands for automatic mode:**
@@ -1182,23 +1182,23 @@ Run `/create-mcp` to create a new MCP server integration. The wizard will:
 2. **Gather requirements** — Understand what service you want to connect and how
 3. **Design tools** — Define the specific capabilities iteratively with you
 4. **Generate code** — Create a working MCP server in `core/mcp/`
-5. **Integrate** — Update CLAUDE.md and this guide so Dex knows how to use it
+5. **Integrate** — Update `AGENTS.md` and this guide so Dex knows how to use it
 6. **Verify** — Provide setup instructions and help you test
 
 **No coding required** — just describe what you want in plain English.
 
 ---
 
-## Claude Code Features
+## Codex Features
 
-Dex leverages these Claude Code capabilities. For deeper understanding:
+Dex leverages these Codex capabilities. For deeper understanding:
 
 | Feature | What It Does | Learn More |
 |---------|--------------|------------|
-| **Commands** | User-triggered workflows (the `/` commands) | [Slash Commands](https://docs.anthropic.com/en/docs/claude-code/slash-commands) |
-| **Hooks** | Auto-trigger actions at specific moments | [Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) |
-| **Skills** | Reusable behaviors available in any session | [Skills](https://docs.anthropic.com/en/docs/claude-code/skills) |
-| **Sub-agents** | Parallel workers with focused tasks | [Sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) |
+| **Commands** | User-triggered workflows (the Dex skill invocations) | [Codex CLI](https://developers.openai.com/codex/cli) |
+| **Hooks** | Auto-trigger actions at specific moments | [Codex CLI](https://developers.openai.com/codex/cli) |
+| **Skills** | Reusable behaviors available in any session | [Skills in OpenAI API](https://developers.openai.com/cookbook/examples/skills_in_api) |
+| **Sub-agents** | Parallel workers with focused tasks | [Codex App Server](https://developers.openai.com/codex/app-server) |
 | **MCP** | Connect to external services | [MCP Introduction](https://modelcontextprotocol.io/introduction) |
 
 ### Using `/dex-improve`
@@ -1206,7 +1206,7 @@ Dex leverages these Claude Code capabilities. For deeper understanding:
 When you have ideas for system improvements, `/dex-improve` acts as a capability-aware design partner:
 
 1. Parses your idea and identifies affected areas
-2. Checks Claude Code capabilities to find best implementation
+2. Checks Codex capabilities to find the best implementation
 3. Suggests related improvements you might not have considered
 4. Creates implementation plan in `plans/`
 
@@ -1240,7 +1240,7 @@ Complexity scales with your organization size (set during onboarding):
 
 ## Maintenance
 
-This guide stays current through the Documentation Sync behavior in CLAUDE.md. When significant system changes happen (new commands, behaviors, workflows), this guide updates automatically.
+This guide stays current through normal Codex-first maintenance. When significant system changes happen (new commands, behaviors, workflows), update this guide alongside `AGENTS.md` and the active skill/hook surfaces.
 
 **Rule of thumb**: If someone reading only this guide would miss something important about how to use the system, it needs updating.
 
@@ -1248,13 +1248,13 @@ This guide stays current through the Documentation Sync behavior in CLAUDE.md. W
 
 ## Related Documentation
 
-- `CLAUDE.md` — Core system configuration and behaviors
+- `AGENTS.md` — Core Codex project instructions and repo behaviors
 - `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists (conceptual)
 - `06-Resources/Dex_System/Memory_Ownership.md` — How agent memory works across sessions
 - `06-Resources/Dex_System/Named_Sessions_Guide.md` — Context isolation and named sessions
 - `06-Resources/Dex_System/Background_Processing_Guide.md` — Automated follow-ups and background tasks
 - `System/pillars.yaml` — Your strategic pillars configuration
-- `.claude/skills/` — Skill definitions following [Agent Skills standard](https://agentskills.io)
+- `.agents/skills/` — Codex skill definitions following the [Agent Skills standard](https://agentskills.io)
 
 ---
 

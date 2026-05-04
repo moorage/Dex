@@ -7,36 +7,18 @@ Uses browser cookie auth - no bot creation required!
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Optional, Tuple
+
+from core.integrations.mcp_config import get_vault_root, load_mcp_config, save_mcp_config
 
 PACKAGE = "slack-mcp-server"  # Well-maintained community MCP
 ALT_PACKAGE = "@kazuph/mcp-slack"  # Alternative option
 MCP_CONFIG_KEY = "slack"
 
-def get_claude_config_path() -> Path:
-    """Get Claude Desktop config path."""
-    return Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json"
-
-def load_claude_config() -> dict:
-    """Load existing Claude config."""
-    config_path = get_claude_config_path()
-    if config_path.exists():
-        with open(config_path) as f:
-            return json.load(f)
-    return {"mcpServers": {}}
-
-def save_claude_config(config: dict) -> None:
-    """Save Claude config."""
-    config_path = get_claude_config_path()
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(config_path, "w") as f:
-        json.dump(config, f, indent=2)
-
 def is_installed() -> bool:
     """Check if Slack MCP is already configured."""
-    config = load_claude_config()
+    config = load_mcp_config()
     return MCP_CONFIG_KEY in config.get("mcpServers", {})
 
 def get_setup_instructions() -> str:
@@ -104,7 +86,7 @@ def install(credential: str, workspace_url: Optional[str] = None) -> Tuple[bool,
 - Bot token starting with `xoxb-`
 - User token starting with `xoxp-`"""
     
-    config = load_claude_config()
+    config = load_mcp_config()
     
     # Add Slack MCP configuration
     mcp_config = {
@@ -119,10 +101,10 @@ def install(credential: str, workspace_url: Optional[str] = None) -> Tuple[bool,
         mcp_config["env"]["SLACK_WORKSPACE_URL"] = workspace_url
     
     config.setdefault("mcpServers", {})[MCP_CONFIG_KEY] = mcp_config
-    save_claude_config(config)
+    save_mcp_config(config)
     
     # Save to Dex integrations config
-    dex_config_path = Path(os.environ.get("DEX_VAULT", ".")) / "System" / "integrations" / "slack.yaml"
+    dex_config_path = get_vault_root() / "System" / "integrations" / "slack.yaml"
     dex_config_path.parent.mkdir(parents=True, exist_ok=True)
     
     with open(dex_config_path, "w") as f:
@@ -132,7 +114,7 @@ def install(credential: str, workspace_url: Optional[str] = None) -> Tuple[bool,
 enabled: true
 package: {PACKAGE}
 auth_type: {auth_type}
-# Credential stored in Claude Desktop config for security
+# Credential stored in Dex's repo-local MCP config
 
 # Integration hooks
 hooks:
@@ -159,14 +141,14 @@ priority_users: []
 **What's set up:**
 - MCP Server: `{PACKAGE}`
 - Auth type: {auth_desc}
-- Credential: Securely stored in Claude Desktop config
+- Credential: Stored in Dex's repo-local `.mcp.json`
 
 **What you can do now:**
 - "What did Sarah say about the Q1 budget?" → Searches Slack
 - Meeting prep will include recent Slack context with attendees
 - Person pages will show Slack interaction history
 
-**Restart Claude Desktop** to activate the integration.
+**Next step:** Reload Dex MCP servers in Codex or restart your Codex session so the new server is picked up.
 
 **Note:** If using cookie auth, you may need to refresh the cookie periodically 
 (when you re-login to Slack in browser).
@@ -174,17 +156,17 @@ priority_users: []
 
 def uninstall() -> Tuple[bool, str]:
     """Remove Slack MCP configuration."""
-    config = load_claude_config()
+    config = load_mcp_config()
     
     if MCP_CONFIG_KEY in config.get("mcpServers", {}):
         del config["mcpServers"][MCP_CONFIG_KEY]
-        save_claude_config(config)
-        return True, "Slack integration removed. Restart Claude Desktop to apply."
+        save_mcp_config(config)
+        return True, "Slack integration removed. Reload Dex MCP servers or restart Codex to apply."
     
     return False, "Slack integration was not configured."
 
 def test_connection() -> Tuple[bool, str]:
     """Test if Slack connection is working."""
     if is_installed():
-        return True, "Slack MCP is configured. Restart Claude Desktop if you haven't already."
-    return False, "Slack MCP is not configured. Run /integrate-slack to set up."
+        return True, "Slack MCP is configured. Reload Dex MCP servers if the current Codex session does not see it yet."
+    return False, "Slack MCP is not configured. Ask Codex to set up the Slack integration."

@@ -24,7 +24,7 @@ Your data is **completely separate** from the Dex application. Updates only touc
 It's like updating Microsoft Word. The app gets better, but your documents stay exactly as they are.
 
 **Your customizations are preserved too:**
-- **CLAUDE.md personal notes:** Anything between `USER_EXTENSIONS_START/END` is preserved during updates
+- **User profile and pillars:** `System/user-profile.yaml` and `System/pillars.yaml` stay yours during updates
 - **Custom MCP servers:** Name them with `user-` or `custom-` (e.g., `user-gmail`) so updates always keep them
 
 ---
@@ -92,7 +92,7 @@ To check, you'll type one command later. Don't worry - we'll tell you exactly wh
 
 ### Step 1: Run the Update Command
 
-**In Cursor, in the chat where you talk to Dex, type:**
+**In Codex, in the chat where you talk to Dex, type:**
 
 ```
 /dex-update
@@ -196,13 +196,13 @@ Don't panic! Follow the simple instructions. It's a one-time thing:
 3. Press Enter
 4. Click "Install" when a window pops up
 5. Wait 5 minutes for download
-6. Come back to Cursor and try `/dex-update` again
+6. Come back to Codex and try `/dex-update` again
 
 **On Windows:**
 1. Go to: https://git-scm.com/download/win
 2. Click the download link
 3. Run the installer (click Next on everything)
-4. Restart Cursor
+4. Restart Codex
 5. Try `/dex-update` again
 
 This only happens once. After this, updates are automatic.
@@ -291,7 +291,7 @@ Sometimes both you AND the main version changed the same file. For example:
 🔍 Resolving overlapping changes...
 
 Found changes in the same files:
-- CLAUDE.md (your version vs update version)
+- AGENTS.md (your version vs update version)
 
 Automatically keeping: Your customizations
 Automatically updating: Core Dex features
@@ -633,19 +633,18 @@ You're never forced to update - you always confirm first.
 ### What if I made changes to Dex itself?
 
 **Customizations in recommended places:**
-- `.claude/skills-custom/` - Your custom skills
+- `System/customizations/` - Your custom workflow notes
 - `core/mcp-custom/` - Your custom integrations
-- `CLAUDE-custom.md` - Your prompt customizations
+- `System/user-profile.yaml` - Your personal preferences
 
 These are protected. Updates won't touch them.
 
 **Changes to core Dex files:**
 
-If you edited a core file (like `.claude/skills/daily-plan/SKILL.md`), and an update also changes that file, Dex will:
+If you edited a core file (like `.agents/skills/daily-plan/SKILL.md`), and an update also changes that file, Dex will:
 1. Detect the overlap
 2. Ask which version to keep
-   - If AskUserQuestion is available, Dex shows a guided choice
-   - If not, Dex shows a CLI prompt with the same options + tradeoffs
+   - Dex shows a direct prompt with the same options and tradeoffs
 3. Usually keep your version (your customizations)
 
 But **better practice:** Put your customizations in the `-custom` folders so they never conflict.
@@ -706,7 +705,7 @@ If Git isn't working or you just want a fresh start:
 2. Copy your data folders (00-07, System/) from old to new
 3. Delete old Dex folder
 4. Rename new folder to 'dex'
-5. Open in Cursor
+5. Open in Codex
 
 This works but takes 10-15 minutes vs. 2 minutes for `/dex-update`.
 
@@ -758,7 +757,7 @@ Instantly restores previous version.
 
 **That's it.** Two commands. Your data is always safe. You can always undo.
 
-Updates should improve your work, not create anxiety. If you're ever unsure, just ask in Cursor chat: "Should I update to v1.3.0?" and Dex will explain what's new.
+Updates should improve your work, not create anxiety. If you're ever unsure, just ask in Codex: "Should I update to v1.3.0?" and Dex will explain what's new.
 
 ---
 

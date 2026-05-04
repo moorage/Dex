@@ -22,7 +22,7 @@ First run will prompt for permissions:
 
 ### 3. Verify It's Running
 
-In Claude/Pi, use:
+In Codex or Pi, use:
 ```
 /screenpipe-start
 ```
@@ -48,9 +48,9 @@ or check status with the `screenpipe_status` tool.
 | `/screenpipe-start` | Start ScreenPipe in background |
 | `/screen-day` | Summarize today's activity to daily note |
 
-### In Claude Desktop (via MCP)
+### In Codex (via MCP)
 
-The ScreenPipe MCP provides similar functionality directly in Claude Desktop.
+The ScreenPipe MCP provides similar functionality directly in Codex.
 
 ---
 

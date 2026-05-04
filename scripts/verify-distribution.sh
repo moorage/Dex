@@ -50,9 +50,14 @@ echo "✓ Checking user data is gitignored..."
 USER_FOLDERS=("00-Inbox" "01-Quarter_Goals" "02-Week_Priorities" "03-Tasks" "04-Projects" "05-Areas" "07-Archives")
 for folder in "${USER_FOLDERS[@]}"; do
     if git ls-files --error-unmatch "$folder" 2>/dev/null | head -1 >/dev/null; then
-        echo "  ⚠️  WARNING: $folder has tracked files"
-        echo "     These should be in demo mode only: System/Demo/$folder"
-        WARNINGS=$((WARNINGS + 1))
+        NON_MARKDOWN=$(git ls-files "$folder" | grep -vE '\.md$' || true)
+        if [ -n "$NON_MARKDOWN" ]; then
+            echo "  ⚠️  WARNING: $folder has tracked non-markdown files"
+            echo "     Review whether they belong in demo mode only: System/Demo/$folder"
+            WARNINGS=$((WARNINGS + 1))
+        else
+            echo "  ℹ️  INFO: $folder contains tracked scaffold markdown files"
+        fi
     fi
 done
 if [ $WARNINGS -eq 0 ]; then
@@ -63,8 +68,9 @@ fi
 echo ""
 echo "✓ Scanning for personal email addresses..."
 EMAIL_MATCHES=$(git ls-files | xargs grep -E '[a-z0-9._%+-]+@[a-z0-9.-]+\.(com|net|org|io|ai)' 2>/dev/null | \
+    grep -vE '^System/Demo/|^core/tests/' | \
     grep -v 'README\|example\|template\|CHANGELOG\|Distribution_Checklist\|\.md:.*https://\|\.md:.*example@' | \
-    grep -v 'user@example.com\|name@company.com\|you@domain.com' || true)
+    grep -v 'user@example.com\|name@company.com\|you@domain.com\|company.com\|COMMERCIAL_LICENSE\|hey@heydex.ai' || true)
 if [ -n "$EMAIL_MATCHES" ]; then
     echo "  ⚠️  WARNING: Email addresses found (verify these are examples):"
     echo "$EMAIL_MATCHES" | head -5 | sed 's/^/     /'
@@ -76,7 +82,7 @@ fi
 # Check 6: Verify critical files exist
 echo ""
 echo "✓ Checking critical distribution files..."
-REQUIRED_FILES=("README.md" ".gitignore" "install.sh" "System/.mcp.json.example" "env.example")
+REQUIRED_FILES=("README.md" ".gitignore" "install.sh" ".mcp.json.example" ".mcp.plugin.json" "env.example" "AGENTS.md" ".codex-plugin/plugin.json")
 for file in "${REQUIRED_FILES[@]}"; do
     if [ ! -f "$file" ]; then
         echo "  ❌ ERROR: Missing required file: $file"
@@ -101,7 +107,7 @@ fi
 # Check 8: Verify .mcp.json.example uses template placeholders
 echo ""
 echo "✓ Checking .mcp.json.example uses placeholders..."
-if ! grep -q '{{VAULT_PATH}}' System/.mcp.json.example; then
+if ! grep -q '{{VAULT_PATH}}' .mcp.json.example; then
     echo "  ❌ ERROR: .mcp.json.example doesn't use {{VAULT_PATH}} placeholder"
     ERRORS=$((ERRORS + 1))
 else
@@ -111,8 +117,8 @@ fi
 # Check 9: Count MCP servers
 echo ""
 echo "✓ Verifying MCP server count..."
-MCP_COUNT=$(find core/mcp -name '*_server.py' -o -name 'update_checker.py' | wc -l | tr -d ' ')
-TEMPLATE_COUNT=$(grep -c '{{VAULT_PATH}}/core/mcp/' System/.mcp.json.example)
+MCP_COUNT=$(find core/mcp -maxdepth 1 -type f \( -name '*_server.py' -o -name 'update_checker.py' \) | wc -l | tr -d ' ')
+TEMPLATE_COUNT=$(grep -c 'run-dex-mcp\.cjs' .mcp.json.example)
 if [ "$MCP_COUNT" != "$TEMPLATE_COUNT" ]; then
     echo "  ⚠️  WARNING: MCP mismatch - $MCP_COUNT servers found, $TEMPLATE_COUNT in template"
     WARNINGS=$((WARNINGS + 1))
@@ -162,20 +168,20 @@ fi
 echo ""
 echo "✓ Checking MCP server files exist..."
 MCP_MISSING=0
-if [ -f "System/.mcp.json.example" ]; then
-    for server_path in $(grep -o '{{VAULT_PATH}}/core/mcp/[^"]*' System/.mcp.json.example | sed 's|{{VAULT_PATH}}/||'); do
+if [ -f ".mcp.json.example" ]; then
+    for server_path in $(grep -o '"[^"]*run-dex-mcp\.cjs"' .mcp.json.example | tr -d '"' | sed 's|{{VAULT_PATH}}/||'); do
         if [ ! -f "$server_path" ]; then
-            echo "  ❌ ERROR: MCP server missing: $server_path"
+            echo "  ❌ ERROR: MCP launcher missing: $server_path"
             MCP_MISSING=$((MCP_MISSING + 1))
         fi
     done
     if [ $MCP_MISSING -gt 0 ]; then
         ERRORS=$((ERRORS + MCP_MISSING))
     else
-        echo "  ✅ All MCP server files exist"
+        echo "  ✅ MCP launcher file exists"
     fi
 else
-    echo "  ⚠️  WARNING: System/.mcp.json.example not found"
+    echo "  ⚠️  WARNING: .mcp.json.example not found"
     WARNINGS=$((WARNINGS + 1))
 fi
 
@@ -199,7 +205,7 @@ else
     echo ""
     echo "Next steps:"
     echo "  1. Review CHANGELOG.md"
-    echo "  2. Update version in package.json"
+    echo "  2. Update version in package.json if needed"
     echo "  3. Commit and push: git push origin main"
     echo "  4. Create release: git tag -a v1.0.0 -m 'Initial release'"
     exit 0

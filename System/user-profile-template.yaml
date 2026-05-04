@@ -65,7 +65,7 @@ pillars: []
 # Meeting Processing Configuration
 # How Dex processes meetings from Granola
 meeting_processing:
-  # Mode: "automatic" (notes appear in your vault within 30min) or "manual" (run /process-meetings)
+  # Mode: "automatic" (notes appear in your vault within 30min) or "manual" (use $process-meetings)
   mode: automatic
   
   # API provider for automatic mode: gemini, anthropic, or openai
@@ -130,7 +130,7 @@ quarterly_planning:
 # Integration Configuration
 # Tracks which external integrations are enabled
 integrations:
-  pendo_mcp_enabled: false  # Pendo product analytics (OAuth via Cursor MCP)
+  pendo_mcp_enabled: false  # Pendo product analytics (OAuth-enabled MCP)
 
 # Analytics Configuration
 # Controls anonymous feature usage tracking to help Dave improve Dex

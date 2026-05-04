@@ -8,15 +8,15 @@ Configuration and system files for Dex.
 - **user-profile.yaml** — User preferences and settings (created during onboarding)
 - **user-profile-template.yaml** — Template for user profile structure
 - **Dex_Backlog.md** — AI-ranked improvement backlog (ideas from you + AI discoveries)
-- **usage_log.md** — Feature adoption tracking (used by `/dex-level-up`)
-- **.mcp.json.example** — Example MCP server configuration
+- **usage_log.md** — Feature adoption tracking (used by `$dex-level-up`)
+- **../.mcp.json.example** — Example MCP server configuration template
 - **.last-learning-check** — Timestamp for learning review prompts
-- **claude-code-state.json** — Tracks Anthropic changelog checks
+- **codex-state.json** — Tracks external agent-tooling changelog checks
 
 ## Subfolders
 
 - **Templates/** — Note templates for consistent formatting
-- **Session_Learnings/** — Daily learning capture from `/review` sessions
+- **Session_Learnings/** — Daily learning capture from `$review` sessions
 - **Demo/** — Demo mode configuration and sample data
 
 ## What to Edit
@@ -27,10 +27,10 @@ Configuration and system files for Dex.
 - `Dex_Backlog.md` — Mark ideas as implemented, add notes
 
 **Don't modify:**
-- Demo/ — Managed by `/dex-demo` command
+- Demo/ — Managed by `$dex-demo`
 - usage_log.md — Auto-updated by system
 - .last-learning-check — Auto-updated by learning prompt system
-- claude-code-state.json — Auto-updated by changelog monitoring
+- codex-state.json — Auto-updated by changelog monitoring
 
 ## Key Concepts
 
@@ -58,9 +58,9 @@ These preferences shape how Dex communicates and what features are enabled.
 
 ## Onboarding
 
-The `user-profile.yaml` file is created during initial onboarding via the Onboarding MCP server. This stateful onboarding system validates required fields (especially email domain for person routing) and creates the vault structure automatically.
+The `user-profile.yaml` file is created during initial onboarding via the Onboarding MCP server. This stateful onboarding system validates required fields, especially `email_domain`, and creates the vault structure automatically.
 
-After onboarding, run `/getting-started` for an interactive tour of available features.
+After onboarding, use `$getting-started` for the interactive post-onboarding tour.
 
 ## Usage
 

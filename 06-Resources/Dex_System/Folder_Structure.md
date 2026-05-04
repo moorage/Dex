@@ -220,16 +220,16 @@ System/
 ├── Session_Learnings/        # Auto-captured improvements during /review
 ├── pillars.yaml              # Strategic pillars (your main focus areas)
 ├── user-profile.yaml         # User preferences and settings
-├── claude-code-state.json    # Tracks last changelog check
+├── codex-state.json          # Tracks last changelog check
 ├── Dex_Backlog.md            # System improvement backlog (AI-ranked)
 ├── usage_log.md              # Feature adoption tracking (for /dex-level-up)
 └── Demo/                     # Demo mode sandbox (if enabled)
 ```
 
-Most users won't edit this directly—Dex manages it. But when you want to adjust strategic direction or preferences, the key files are here.
+Most users won't edit this directly. Dex manages it. But when you want to adjust strategic direction or preferences, the key files are here.
 
 **Background automation:** Dex also includes scripts in `.scripts/` that run automatically:
-- `check-anthropic-changelog.cjs` — Checks for Claude updates every 6 hours
+- `check-codex-changelog.cjs` — Checks for Codex updates every 6 hours
 - `learning-review-prompt.sh` — Daily 5pm check for pending learnings
 - These run via macOS Launch Agents and require no user intervention
 
@@ -329,7 +329,7 @@ Want to explore Dex with sample data before adding your own? Run `/dex-demo on` 
 
 ## Related Documentation
 
-- `CLAUDE.md` — Core system configuration
+- `AGENTS.md` — Core Codex project instructions
 - `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
 - `06-Resources/Dex_System/Dex_System_Guide.md` — How to use everything
 - `System/pillars.yaml` — Your strategic pillars configuration

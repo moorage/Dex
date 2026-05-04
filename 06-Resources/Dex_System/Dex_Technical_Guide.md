@@ -20,7 +20,7 @@
 9. [Design Constraints](#design-constraints)
 
 **Related Guides:**
-- [Cursor Compatibility](Cursor_Compatibility.md) - Working with both Cursor and Claude Code
+- Codex-first runtime guidance - this guide assumes Codex is the primary interactive host
 
 ---
 
@@ -92,7 +92,7 @@ System/            # Configuration
 
 Agent Skills (from [agentskills.io](https://agentskills.io)) is a universal format for AI workflows. It's basically "markdown files with YAML frontmatter + structured instructions."
 
-Every skill lives in `.claude/skills/[skill-name]/SKILL.md`:
+Every skill lives in `.agents/skills/[skill-name]/SKILL.md`:
 
 ```yaml
 ---
@@ -101,12 +101,12 @@ description: Generate context-aware daily plan with calendar, tasks, and priorit
 ---
 
 ## Purpose
-...instructions for Claude...
+...instructions for Codex...
 ```
 
 ### Why YAML Frontmatter?
 
-**Discoverability:** Claude can list available skills by reading frontmatter without parsing the whole file.
+**Discoverability:** Codex can list available skills by reading frontmatter without parsing the whole file.
 
 **Metadata:** Name, description, version, dependencies all in structured format.
 
@@ -114,7 +114,7 @@ description: Generate context-aware daily plan with calendar, tasks, and priorit
 
 ### Skills vs. Raw Prompts
 
-**Without skills (just CLAUDE.md):**
+**Without skills (just AGENTS.md):**
 - One giant prompt file (10K+ lines)
 - Hard to navigate
 - Can't version individual workflows
@@ -126,7 +126,7 @@ description: Generate context-aware daily plan with calendar, tasks, and priorit
 - Each skill is independently versioned
 - Only loads when needed (saves tokens)
 
-**Example from `.claude/skills/daily-plan/SKILL.md`:**
+**Example from `.agents/skills/daily-plan/SKILL.md`:**
 
 ```yaml
 ---
@@ -144,15 +144,15 @@ description: Generate context-aware daily plan with calendar, tasks, and priorit
 ...
 ```
 
-Claude reads this file when you type `/daily-plan`, follows the steps, and doesn't load it otherwise.
+Codex reads this file when you invoke `$daily-plan`, follows the steps, and doesn't load it otherwise.
 
 ### Role-Specific Skills
 
-Dex has 25 core skills, plus 27 role-specific skills (Product, Sales, Marketing, etc.) stored in `.claude/skills/_available/[role]/[skill-name]/`.
+Dex ships a Codex-facing core skill surface plus role-specific skills stored in `.agents/skills/_available/[role]/[skill-name]/`.
 
-**Why separate?** Not everyone needs `/pipeline-health` or `/board-prep`. Skills are discovered via `/dex-level-up` based on your role and installed on demand.
+**Why separate?** Not everyone needs `$pipeline-health` or `$board-prep`. Skills are discovered via `$dex-level-up` based on your role and installed on demand.
 
-**Implementation:** Skills in `_available/` aren't loaded into Cursor's context until you explicitly install them (by moving to `.claude/skills/`).
+**Implementation:** Role-specific skills live under `.agents/skills/_available/` and are surfaced into the active `.agents/skills/` tree when installed.
 
 ---
 
@@ -166,14 +166,14 @@ Think of it like this:
 - **Files** = static knowledge (your notes, tasks, meetings)
 - **MCP Servers** = dynamic operations (create task, check calendar, sync data)
 
-MCP servers expose **tools** (like API endpoints) that Claude can call. Each tool has:
+MCP servers expose **tools** (like API endpoints) that Codex can call. Each tool has:
 - Schema (required/optional parameters)
 - Validation rules
 - Deterministic behavior
 
 ### Why MCP Instead of Just Files?
 
-**Problem:** Claude can read/write files, but it can't enforce rules:
+**Problem:** Codex can read/write files, but it can't enforce rules:
 - No deduplication (might create duplicate tasks)
 - No validation (might break task ID format)
 - No syncing (updates task file but doesn't update person pages)
@@ -253,7 +253,7 @@ This ensures every task gets a unique, sortable ID that's stable across files.
 - `calendar_list_calendars` - Show available calendars
 - `calendar_list_events` - Get meetings for date range
 
-**How it's used:** The `/daily-plan` skill calls `calendar_list_events(start_date="2026-01-28")` to show today's meetings. Claude then cross-references meeting attendees with person pages to inject context.
+**How it's used:** The `/daily-plan` skill calls `calendar_list_events(start_date="2026-01-28")` to show today's meetings. Codex then cross-references meeting attendees with person pages to inject context.
 
 #### 3. **Granola MCP** (`core/mcp/granola_server.py`)
 
@@ -372,7 +372,7 @@ If interrupted, calling `start_onboarding_session()` resumes from the last compl
 
 **Setup:**
 1. Admin must enable in Pendo: Settings → Subscription Settings → AI Features → Pendo MCP Server
-2. Add to AI client config (Cursor example):
+2. Add to your AI client config:
 ```json
 {
   "mcpServers": {
@@ -435,7 +435,7 @@ mcp.server.stdio.stdio_server()(server)
 
 ### The Token Budget Problem
 
-Claude Code has a context window (currently ~200K tokens). Every file you read, every skill you load, every message in the chat - all count against this budget.
+Codex has a context window. Every file you read, every skill you load, and every message in the chat count against this budget.
 
 **Naive approach:** Load everything at session start.
 **Result:** 50K tokens gone before you type anything. Chat ends after 10 exchanges.
@@ -444,13 +444,13 @@ Claude Code has a context window (currently ~200K tokens). Every file you read, 
 
 ### Hooks: Background Context Injection
 
-Hooks are scripts that run automatically when Claude uses certain tools. They *augment* the tool output without Claude explicitly asking.
+Hooks are scripts that run automatically when Codex uses certain tools. They *augment* the tool output without Codex explicitly asking.
 
 **Example: Person Context Hook**
 
-**File:** `.claude/hooks/person-context-injector.cjs`
+**File:** `.codex/hooks/post-bash-context.cjs`
 
-**When it runs:** Whenever Claude calls the `Read` tool and the file contains a person's name.
+**When it runs:** Whenever Codex uses a Bash-based file-read command and the file contains a person's or company's name.
 
 **What it does:**
 
@@ -477,19 +477,21 @@ for (const personFile of foundPeople) {
 
 **Why this is powerful:**
 
-- **Automatic:** Claude doesn't need to "know" to check person pages
+- **Automatic:** Codex does not need to "know" to check person pages
+- **Automatic:** Codex doesn't need to "know" to check person pages
 - **Targeted:** Only injects context for people actually mentioned
 - **Token-efficient:** Summaries, not full files
 
 **Similar hooks:**
-- `company-context-injector.cjs` - Injects company/account context
-- `session-start.sh` - Shows strategic hierarchy at session start
+- `session-start.cjs` - Shows repo and planning context at session start
+- `post-write-career-evidence.cjs` - Captures evidence after career-note writes
+- `post-write-meeting-person-update.cjs` - Updates person pages after meeting processing
 
 ### Session Start Hook
 
-**File:** `.claude/hooks/session-start.sh`
+**File:** `.codex/hooks/session-start.cjs`
 
-**When it runs:** Every time you open a chat with Claude.
+**When it runs:** Every time you open a Codex session in this repo.
 
 **What it shows:**
 
@@ -523,7 +525,7 @@ for (const personFile of foundPeople) {
 
 **Why this matters:**
 
-- **Strategic alignment:** Claude sees your pillars/goals every session
+- **Strategic alignment:** Codex sees your pillars/goals every session
 - **Immediate context:** Knows what's urgent before you ask
 - **Learning integration:** Shows past mistakes to avoid repeating
 
@@ -533,10 +535,10 @@ for (const personFile of foundPeople) {
 
 Skills aren't loaded until invoked:
 
-1. User types `/daily-plan`
-2. Cursor finds `.claude/skills/daily-plan/SKILL.md`
-3. Claude reads the skill file (~2K tokens)
-4. Claude follows the instructions
+1. User invokes `$daily-plan`
+2. Codex finds `.agents/skills/daily-plan/SKILL.md`
+3. Codex reads the skill file (~2K tokens)
+4. Codex follows the instructions
 5. Skill is unloaded after command completes
 
 **Alternative (bad):** Load all 42 skills at session start = 84K tokens before chat begins.
@@ -601,7 +603,7 @@ create_task(
 
 When you say "I finished reviewing the API design":
 
-1. Claude searches for the task (fuzzy match on title)
+1. Codex searches for the task (fuzzy match on title)
 2. Finds task ID: `^task-20260128-001`
 3. Calls Work MCP: `update_task_status(task_id="task-20260128-001", status="d")`
 4. MCP updates **all four locations**:
@@ -642,10 +644,10 @@ This is **deterministic business logic** that files alone can't provide.
 
 ### Why Not Just File Search-and-Replace?
 
-**You could** do this with Claude directly editing files. Problems:
+**You could** do this with Codex directly editing files. Problems:
 
 1. **Race conditions:** If two tasks are updated simultaneously, edits conflict
-2. **Validation:** Claude might use wrong checkbox format, break task ID
+2. **Validation:** Codex might use the wrong checkbox format or break the task ID
 3. **Discoverability:** Hard to know which files need updating without scanning everything
 4. **Rollback:** If update fails halfway through, you have partial state
 
@@ -792,7 +794,7 @@ Tasks use three tag types:
 
 ### Why MCP for Integrations?
 
-**Alternative:** Claude could call APIs directly (e.g., `curl https://granola-api.com/notes`).
+**Alternative:** Codex could call APIs directly (e.g., `curl https://granola-api.com/notes`).
 
 **Problems:**
 - Auth management (API keys in every chat)
@@ -817,7 +819,7 @@ Most productivity tools are static: you configure them once, use them forever. T
 **Dex's philosophy:** The system should learn from:
 1. **Your mistakes** (patterns to avoid)
 2. **Your preferences** (how you like to work)
-3. **Claude's updates** (new capabilities)
+3. **Codex updates** (new capabilities)
 
 ### Three Learning Mechanisms
 
@@ -845,7 +847,7 @@ Most productivity tools are static: you configure them once, use them forever. T
 - **Daily review** prompts "Any mistakes today worth capturing?"
 - **Weekly review** scans for patterns (e.g., "you over-promised 3 times this week")
 
-**Implementation:** `.claude/hooks/session-start.sh` greps the file for `## Active Patterns` and shows top 3.
+**Implementation:** `.codex/hooks/session-start.cjs` emits targeted repo context, while longer-term learnings are still stored in files and surfaced selectively.
 
 #### 2. Working Preferences
 
@@ -869,22 +871,22 @@ Focus on architecture questions, not syntax nitpicks. I trust the team on detail
 **How it's used:**
 
 - **Session start hook** shows top preferences
-- Claude adapts tone/style based on these (via `System/user-profile.yaml` too)
+- Codex adapts tone/style based on these (via `System/user-profile.yaml` too)
 - `/daily-plan` respects focus times when suggesting schedule
 
-#### 3. Claude Code Updates
+#### 3. Codex Updates
 
-**Goal:** Detect when Anthropic ships new Claude Code features.
+**Goal:** Detect when the underlying agent-tooling stack ships features Dex can leverage.
 
 **Tech stack:**
 - **Background automation** (`.scripts/meeting-intel/daily-synthesis.cjs`)
-- **Anthropic changelog monitoring** (every 6 hours)
+- **Codex changelog monitoring** (every 6 hours)
 - **LaunchAgent** (`com.dex.meeting-intel.plist`)
 
 **Flow:**
 
 1. **LaunchAgent runs script** (every 6 hours)
-2. **Script checks Anthropic changelog** (via web scraping or API)
+2. **Script checks Codex release notes** (via web scraping or API)
 3. **If new updates detected:**
    - Save to `System/changelog-updates-pending.md`
    - Flag shows in session start hook
@@ -894,17 +896,17 @@ Focus on architecture questions, not syntax nitpicks. I trust the team on detail
    - Should we update docs?
    - New capabilities to leverage?
 6. **Skill updates:**
-   - `CLAUDE.md` (if behavior changes)
+   - `AGENTS.md` (if behavior changes)
    - `06-Resources/Dex_System/Dex_System_Guide.md` (if features added)
-   - `System/claude-code-state.json` (tracks last reviewed version)
+   - `System/codex-state.json` (tracks the last reviewed version and changelog check)
 
-**User experience:** Dex tells you "New Claude features available!" and explains what changed.
+**User experience:** Dex tells you "New Codex features available!" and explains what changed.
 
 ### Learning Capture Workflow
 
 **During `/daily-review`:**
 
-1. Claude scans session transcript
+1. Codex scans session transcript
 2. Asks: "Anything to capture?"
    - Mistakes or corrections
    - Preferences mentioned
@@ -917,7 +919,7 @@ Focus on architecture questions, not syntax nitpicks. I trust the team on detail
 
 **What happened:** User expected `00-Inbox/` and docs now consistently use `00-Inbox/`
 **Why it matters:** Consistent paths prevent onboarding flow issues
-**Suggested fix:** Audit FOLDER_STRUCTURE.md and CLAUDE.md for consistency
+**Suggested fix:** Audit FOLDER_STRUCTURE.md and AGENTS.md for consistency
 **Status:** pending
 ```
 
@@ -932,8 +934,8 @@ Dex runs self-learning checks automatically through two mechanisms:
 #### Inline Checks (Default - No Installation)
 
 The system runs checks automatically during:
-1. **Session start hook** (`.claude/hooks/session-start.sh`)
-2. **During `/daily-plan`** command
+1. **Session start hook** (`.codex/hooks/session-start.cjs`)
+2. **During `$daily-plan`** execution
 
 **Smart throttling:**
 - Changelog check: Only runs if 6+ hours since last check
@@ -942,7 +944,7 @@ The system runs checks automatically during:
 - Respect intervals even if triggered from multiple places
 
 **State tracking:**
-- `System/claude-code-state.json` - Tracks last changelog check, Claude version, features discovered
+- `System/codex-state.json` - Tracks last changelog check, Codex version, features discovered
 - `System/.last-learning-check` - Tracks last daily learning review
 
 #### Optional: Launch Agent Installation (Background Optimization)
@@ -977,12 +979,12 @@ bash .scripts/install-learning-automation.sh --uninstall
 
 **Manual testing:**
 ```bash
-node .scripts/check-anthropic-changelog.cjs --force
+node .scripts/check-codex-changelog.cjs --force
 bash .scripts/learning-review-prompt.sh
 ```
 
 **Alert files created:**
-- `System/changelog-updates-pending.md` - When new Claude features detected
+- `System/changelog-updates-pending.md` - When new Codex features are detected
 - `System/learning-review-pending.md` - When 5+ pending learnings exist
 
 ### Dex System Improvement Backlog
@@ -994,7 +996,7 @@ bash .scripts/learning-review-prompt.sh
 1. **Capture** - Use `capture_idea` MCP tool from any context
    ```
    User: "This would be better if X"
-   Claude: [calls capture_idea tool with description]
+   Codex: [calls capture_idea tool with description]
    ```
 
 2. **Storage** - Ideas saved to `System/Dex_Backlog.md` with metadata:
@@ -1024,9 +1026,9 @@ bash .scripts/learning-review-prompt.sh
    - Creates implementation plan
    - Suggests file changes
 
-#### Cursor Feasibility Gate
+#### Codex Feasibility Gate
 
-Ideas must be implementable using Cursor's actual capabilities:
+Ideas must be implementable using Codex's actual capabilities:
 - ✅ File operations (read, write, search)
 - ✅ MCP tools and servers
 - ✅ Command/skill creation
@@ -1049,17 +1051,17 @@ Ideas requiring unavailable capabilities are rejected with explanation.
 
 ## Design Constraints
 
-### What Cursor/Claude Code Can't Do
+### What Codex Can't Do
 
 Understanding these constraints explains why Dex is designed the way it is.
 
 #### 1. No Edit Tracking
 
-**Constraint:** Claude can't "see" when you manually edit a file. If you change `03-Tasks/Tasks.md` directly, Claude doesn't know until it reads the file again.
+**Constraint:** Codex can't "see" when you manually edit a file. If you change `03-Tasks/Tasks.md` directly, Codex does not know until it reads the file again.
 
 **Implication:** Can't do "smart diffing" or "real-time sync." Must rely on explicit reads.
 
-**Dex's approach:** MCP servers are "write APIs" - they handle edits deterministically. If you manually edit, just tell Claude "task X is done" and MCP syncs everywhere.
+**Dex's approach:** MCP servers are "write APIs" - they handle edits deterministically. If you manually edit, just tell Codex "task X is done" and MCP syncs everywhere.
 
 #### 2. No Internal Hooks
 
@@ -1071,8 +1073,8 @@ Understanding these constraints explains why Dex is designed the way it is.
 
 #### 3. Limited Memory Between Sessions
 
-**Constraint:** Each chat session starts fresh. Claude only remembers what's in:
-- `CLAUDE.md` (loaded every session)
+**Constraint:** Each chat session starts fresh. Codex only remembers what's in:
+- `AGENTS.md` (project instructions loaded for the repo)
 - Session start hook output
 - Files it explicitly reads
 
@@ -1085,35 +1087,35 @@ Understanding these constraints explains why Dex is designed the way it is.
 
 #### 4. No Background Processes
 
-**Constraint:** Claude isn't a daemon. It only runs when you're chatting.
+**Constraint:** Codex isn't a daemon. It only runs when you're chatting.
 
-**Implication:** Can't "auto-sync Granola every hour" from within Cursor.
+**Implication:** Can't "auto-sync Granola every hour" from within Codex alone.
 
-**Dex's approach:** Use macOS LaunchAgents (`.scripts/meeting-intel/`) for background automation. Claude processes the results when you check in.
+**Dex's approach:** Use macOS LaunchAgents (`.scripts/meeting-intel/`) for background automation. Codex processes the results when you check in.
 
-### What Cursor/Claude Code Is Good At
+### What Codex Is Good At
 
 #### 1. File Operations
 
 **Strength:** Reading, writing, searching files is fast and reliable.
 
-**Dex's leverage:** Everything is files. Tasks, meetings, people, goals - all markdown. Claude navigates this effortlessly.
+**Dex's leverage:** Everything is files. Tasks, meetings, people, goals - all markdown. Codex navigates this effortlessly.
 
 #### 2. Natural Language Understanding
 
-**Strength:** Claude can parse messy input ("I finished the API thing with John") and map to structured operations.
+**Strength:** Codex can parse messy input ("I finished the API thing with John") and map to structured operations.
 
-**Dex's leverage:** User speaks naturally. Claude translates to MCP calls. No rigid forms or syntax.
+**Dex's leverage:** User speaks naturally. Codex translates that into MCP calls. No rigid forms or syntax.
 
 #### 3. Contextual Reasoning
 
-**Strength:** Claude can synthesize information across multiple files (meeting notes + person pages + calendar + tasks) to generate insights.
+**Strength:** Codex can synthesize information across multiple files (meeting notes + person pages + calendar + tasks) to generate insights.
 
 **Dex's leverage:** Daily plan isn't a template, it's a synthesis. "You have a 1:1 with John at 2pm. He mentioned being blocked on API auth in your last meeting. That task is still open. Want to prep a solution?"
 
 #### 4. Tool Composition
 
-**Strength:** Claude can chain tool calls (read file → call MCP → write file → read another file).
+**Strength:** Codex can chain tool calls (read file → call MCP → write file → read another file).
 
 **Dex's leverage:** Skills orchestrate complex workflows. `/process-meetings` calls Granola MCP, parses output, creates tasks via Work MCP, updates person pages, all in one flow.
 
@@ -1132,22 +1134,22 @@ Understanding these constraints explains why Dex is designed the way it is.
 
 ### Core Configuration
 
-- `CLAUDE.md` - Main AI behavior instructions
+- `AGENTS.md` - Main Codex project instructions
 - `System/user-profile.yaml` - User preferences, company info, communication style
 - `System/pillars.yaml` - Strategic pillars (focus areas)
-- `.claude/settings.json` - Cursor settings (MCP server configs)
+- `.codex/config.toml` - Codex runtime settings and MCP server configs
 
 ### Skills
 
-- `.claude/skills/[skill-name]/SKILL.md` - All skills follow this structure
-- `.claude/skills/_available/` - Role-specific skills (not loaded by default)
+- `.agents/skills/[skill-name]/SKILL.md` - All active Codex skills follow this structure
+- `.agents/skills/_available/` - Role-specific skills (not loaded by default)
 
 ### Hooks
 
-- `.claude/hooks/person-context-injector.cjs` - Injects person context on file read
-- `.claude/hooks/company-context-injector.cjs` - Injects company context on file read
-- `.claude/hooks/session-start.sh` - Shows strategic context at session start
-- `.claude/hooks/session-end.sh` - Cleanup/archiving on session end
+- `.codex/hooks/post-bash-context.cjs` - Injects person/company context after Bash-based file reads
+- `.codex/hooks/session-start.cjs` - Shows repo context at session start
+- `.codex/hooks/post-write-career-evidence.cjs` - Captures career evidence after writes
+- `.codex/hooks/session-activity-log.cjs` - Logs session activity from the Codex hook layer
 
 ### MCP Servers
 
@@ -1177,8 +1179,8 @@ Want to adapt Dex for your use case? Key customization points:
 
 1. **Pillars:** Edit `System/pillars.yaml` to match your focus areas
 2. **Folder structure:** Keep PARA (it's battle-tested), but adjust subdirs (e.g., add `05-Areas/Customers/`)
-3. **Skills:** Create role-specific skills in `.claude/skills/` (see `anthropic-skill-creator` skill)
-4. **MCP servers:** Add integrations for your tools (Notion, Linear, etc.) - see `.claude/reference/mcp-servers.md`
+3. **Skills:** Create repo-local skills in `.agents/skills/` (see `$create-skill`)
+4. **MCP servers:** Add integrations for your tools (Notion, Linear, etc.) - see `.mcp.json.example` and `core/mcp/`
 
 ### Pi Extension Development
 
@@ -1200,7 +1202,7 @@ This reference contains:
 ### Best Practices
 
 - **Don't edit canonical files manually:** Use MCP tools to ensure syncing works
-- **Backup regularly:** `git commit` daily (or use `.claude/hooks/session-end.sh` to auto-commit)
+- **Backup regularly:** `git commit` daily
 - **Test in demo mode:** Use `System/Demo/` to experiment without touching real data
 - **Document learnings:** Use `System/Session_Learnings/` to capture improvements
 - **Read Pi TUI Reference before TUI work:** See above - mandatory for extension development
@@ -1218,8 +1220,8 @@ This guide assumes you're comfortable with:
 If you get stuck, check:
 - `06-Resources/Dex_System/Dex_System_Guide.md` (user-facing guide)
 - `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` (why each piece exists)
-- `.claude/reference/mcp-servers.md` (MCP setup details)
+- `docs/mcp-servers.md` (MCP setup details)
 
 ---
 
-*This guide is a living document. As Dex evolves and Claude Code gains new capabilities, this will be updated to reflect best practices.*
+*This guide is a living document. As Dex evolves and Codex gains new capabilities, this will be updated to reflect best practices.*

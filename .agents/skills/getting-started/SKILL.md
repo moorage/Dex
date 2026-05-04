@@ -308,24 +308,8 @@ Here's what I can create from your Granola history:
 
 ### User Chooses Processing Strategy
 
-Use AskUserQuestion tool. If AskUserQuestion is not available, prompt in CLI with the same numbered options and capture the selection:
-```json
-{
-  "questions": [{
-    "id": "granola_strategy",
-    "prompt": "How would you like to process your Granola data?",
-    "allow_multiple": false,
-    "options": [
-      {"id": "smart", "label": "1️⃣ Smart default - People/companies (all) + Notes (30d) + Todos (7d)"},
-      {"id": "recent", "label": "2️⃣ Recent only - Everything from last 7 days"},
-      {"id": "full", "label": "3️⃣ Full history - Everything from all available data"},
-      {"id": "custom", "label": "4️⃣ Custom - I'll choose time ranges for each type"},
-      {"id": "forward", "label": "5️⃣ Just going forward - Start fresh from today"},
-      {"id": "skip", "label": "6️⃣ Skip for now"}
-    ]
-  }]
-}
-```
+Prompt directly in Codex CLI with the same numbered options and capture one of:
+`smart`, `recent`, `full`, `custom`, `forward`, or `skip`.
 
 ### Custom Mode Flow
 
@@ -416,7 +400,7 @@ def map_strategy_to_ranges(strategy: str, extent: dict) -> dict:
         }
     elif strategy == "skip":
         return None
-    # For "custom", ranges come from separate AskUserQuestion responses (or CLI fallback)
+    # For "custom", ranges come from direct follow-up prompts
 ```
 
 **Show confirmation before processing:**
@@ -456,7 +440,7 @@ def map_strategy_to_ranges(strategy: str, extent: dict) -> dict:
    # - Route to Internal/ or External/
    # - Create/update company pages for external domains
    
-   # Use /process-meetings --people-only --days-back={people_days} logic
+   # Use $process-meetings with people-only behavior and days-back={people_days}
    ```
 
 3. **Phase 2: Meeting Notes (if notes_days > 0):**
@@ -471,7 +455,7 @@ def map_strategy_to_ranges(strategy: str, extent: dict) -> dict:
    # - Link to person/company pages
    # - BUT don't extract todos yet
    
-   # Use /process-meetings --no-todos --days-back={notes_days} logic
+   # Use $process-meetings with no-todos behavior and days-back={notes_days}
    ```
 
 4. **Phase 3: Todos (if todos_days > 0):**
@@ -516,7 +500,7 @@ def map_strategy_to_ranges(strategy: str, extent: dict) -> dict:
    ```
 
 **If "skip" selected:**
-- Show: "No problem! You can always run `/process-meetings` later when you're ready."
+- Show: "No problem! You can always use `$process-meetings` later when you're ready."
 - Move to completion flow
 
 **If "forward" selected:**
@@ -614,7 +598,7 @@ Here's what I can create from your Granola history:
 • Or skip - I can work with just Granola
 ```
 
-Use the same AskUserQuestion and processing logic as Flow A (or CLI fallback).
+Use the same direct numbered-choice prompting and processing logic as Flow A.
 
 ---
 
@@ -814,32 +798,6 @@ Still want to try?"
 
 ---
 
-## Cursor UX Tip (If Running in Cursor)
-
-After a few file edits, offer:
-
-```
-"**Quick Cursor tip:**
-
-You're seeing 'Accept' prompts for each change I make. That's Cursor asking permission.
-
-**Useful at first** - you see what's happening
-**Annoying later** - slows things down
-
-If you want to auto-accept:
-1. Settings (Cmd+,)
-2. Search "always allow tool use"
-3. Enable it
-
-Your choice - some prefer control, others prefer speed."
-```
-
-Only show if:
-- Detected running in Cursor (check environment)
-- After 3-4 accept prompts shown
-
----
-
 ## Integration Discovery (Contextual)
 
 **Trigger:** Run this check if the vault is < 7 days old AND few or no integrations are connected.
@@ -856,7 +814,7 @@ After completing the main pathway flow (A, B, or C) but before showing the compl
 
 Execute the integration concierge:
 ```bash
-node .Codex/hooks/integration-concierge.cjs
+node .codex/hooks/integration-concierge.cjs
 ```
 
 Parse the JSON output for `high_value` and `moderate_value` recommendations.
@@ -904,17 +862,17 @@ After any pathway completes:
 "**You're set up!**
 
 **Daily workflow:**
-• Run `/daily-plan` each morning
-• Use `/meeting-prep [person]` before meetings
+• Ask Codex for a daily plan each morning
+• Ask Codex for meeting prep before important conversations
 • Tell me about meetings - I'll extract action items
 
 **Discovery:**
-• `/dex-level-up` - Find features you haven't tried
-• `/integrate-mcp` - Add more tools anytime
+• `$dex-level-up` - Find features you haven't tried
+• `$integrate-mcp` - Add more tools anytime
 • Smithery.ai - Browse MCP marketplace
 
 **Come back anytime:**
-• `/getting-started` - Run this tour again
+• `$getting-started` - Run this tour again
 • Just ask in natural language - I'll figure out what you need
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -928,8 +886,8 @@ semantic search — finds content by meaning, not just words.
 
 5 minutes to set up. Runs locally. Recommended.
 
-  [1] Set it up now  →  I'll run /enable-semantic-search
-  [2] Skip for now   →  run /enable-semantic-search anytime
+  [1] Set it up now  →  I'll run $enable-semantic-search
+  [2] Skip for now   →  use $enable-semantic-search anytime
 
 What would you like to work on first?"
 ```
@@ -975,12 +933,12 @@ Don't show features they've already tried - focus on gaps.
 At EVERY major decision point:
 
 - "This is a lot - want to pause and come back later?"
-- "No pressure - you can always run `/getting-started` again"
+- "No pressure - you can always use `$getting-started` again"
 - "Want to explore on your own first? That's cool"
 
 After full tour:
-- "Remember - invoke `/dex-level-up` to discover more"
-- "Or `/integrate-mcp` to add tools as you need them"
+- "Remember - invoke `$dex-level-up` to discover more"
+- "Or `$integrate-mcp` to add tools as you need them"
 - "The system grows with you"
 
 ---
@@ -1124,20 +1082,16 @@ if not extent['has_data']:
 else:
     # Check if there's more data beyond 6 months
     if extent['has_more_data']:
-        # Ask if they want to fetch more
-        response = AskUserQuestion({
-            "questions": [{
-                "id": "fetch_more",
-                "prompt": f"I found {extent['meetings_count']} meetings going back {extent['days_back']} days. There appears to be more data beyond that. Want me to check how much more?",
-                "allow_multiple": false,
-                "options": [
-                    {"id": "yes", "label": "Yes - show me the full extent"},
-                    {"id": "no", "label": "No - 6 months is enough"}
-                ]
-            }]
-        })
-        
-        if response['fetch_more'] == 'yes':
+        # Ask directly if they want to fetch more
+        response = prompt_user_with_numbered_options(
+            f"I found {extent['meetings_count']} meetings going back {extent['days_back']} days. There appears to be more data beyond that. Want me to check how much more?",
+            [
+                "Yes - show me the full extent",
+                "No - 6 months is enough",
+            ],
+        )
+
+        if response == 1:
             # Fetch extended range (2 years)
             extent = analyze_granola_extent(email_domain, extended=True)
     

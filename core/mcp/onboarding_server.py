@@ -50,7 +50,6 @@ _repo_root = str(Path(__file__).parent.parent.parent)
 if _repo_root not in sys.path:
     sys.path.append(_repo_root)
 from core.paths import (
-    CLAUDE_MD,
     MARKER_FILE,
     MCP_CONFIG_EXAMPLE,
     MCP_CONFIG_TARGET,
@@ -433,40 +432,6 @@ def create_pillars_file(pillars: List[str]) -> bool:
         return True
     except Exception as e:
         logger.error(f"Error creating pillars file: {e}")
-        return False
-
-def update_claude_md(session_data: Dict) -> bool:
-    """Update CLAUDE.md User Profile section"""
-    try:
-        if not CLAUDE_MD.exists():
-            logger.error("CLAUDE.md not found")
-            return False
-        
-        content = CLAUDE_MD.read_text()
-        data = session_data['data']
-        
-        # Find and replace User Profile section
-        profile_section = f"""## User Profile
-
-<!-- Updated during onboarding -->
-**Name:** {data.get('name', 'Not configured')}
-**Role:** {data.get('role', 'Not configured')}
-**Company Size:** {data.get('company_size', 'Not configured')}
-**Working Style:** {data.get('communication', {}).get('formality', 'Not configured')}
-**Pillars:**
-"""
-        for pillar in data.get('pillars', []):
-            profile_section += f"- {pillar}\n"
-        
-        # Replace between "## User Profile" and next "---"
-        pattern = r'## User Profile.*?---'
-        replacement = profile_section + "\n---"
-        content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-        
-        CLAUDE_MD.write_text(content)
-        return True
-    except Exception as e:
-        logger.error(f"Error updating CLAUDE.md: {e}")
         return False
 
 def setup_mcp_config(vault_path: Path) -> tuple[bool, Optional[str]]:
@@ -1209,9 +1174,9 @@ async def handle_call_tool(name: str, arguments: dict | None) -> list[types.Text
                 would_create_files.append('System/pillars.yaml')
 
                 # Configs that would be updated
-                would_update_configs = ['CLAUDE.md (User Profile section)']
+                would_update_configs = []
                 if MCP_CONFIG_EXAMPLE.exists():
-                    would_update_configs.append('System/.mcp.json')
+                    would_update_configs.append('.mcp.json')
 
                 # Build preview of user-profile.yaml content
                 data = session['data']
@@ -1298,22 +1263,15 @@ async def handle_call_tool(name: str, arguments: dict | None) -> list[types.Text
                 else:
                     summary['errors'].append("Could not create pillars.yaml")
 
-                # 5. Update CLAUDE.md
-                logger.info("Updating CLAUDE.md")
-                if update_claude_md(session):
-                    summary['configs_updated'].append('CLAUDE.md')
-                else:
-                    summary['errors'].append("Could not update CLAUDE.md")
-
-                # 6. Setup MCP config
+                # 5. Setup MCP config
                 logger.info("Setting up .mcp.json")
                 success, error = setup_mcp_config(BASE_DIR)
                 if success:
-                    summary['configs_updated'].append('System/.mcp.json')
+                    summary['configs_updated'].append('.mcp.json')
                 else:
                     summary['errors'].append(f"MCP config error: {error}")
 
-                # 7. Create completion marker
+                # 6. Create completion marker
                 logger.info("Creating completion marker")
                 marker_data = {
                     "completed_at": datetime.now().isoformat(),
@@ -1327,7 +1285,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> list[types.Text
                 MARKER_FILE.write_text(json.dumps(marker_data, indent=2, cls=DateTimeEncoder))
                 logger.info("Completion marker created")
 
-                # 8. Delete session file
+                # 7. Delete session file
                 if SESSION_FILE.exists():
                     SESSION_FILE.unlink()
                     logger.info("Deleted session file")

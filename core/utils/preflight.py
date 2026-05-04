@@ -3,7 +3,7 @@
 Dex Pre-flight Health Checker
 
 Fast checks that configured MCP servers can actually start.
-Called from session-start.sh — outputs plain-language results.
+Called from the Codex session-start hook — outputs plain-language results.
 
 Checks:
 1. Does the Python file exist?
@@ -40,7 +40,7 @@ def get_error_queue_path() -> Path:
     return Path(get_vault_path()) / ".logs" / "error-queue.json"
 
 
-# Map of MCP server names → their Python module files (relative to dex-core/core/mcp/)
+# Map of MCP server names → their Python module files (relative to core/mcp/)
 SERVER_MODULES = {
     "work-mcp": "work_server.py",
     "calendar-mcp": "calendar_server.py",
@@ -128,11 +128,11 @@ def needs_recheck(health: dict) -> bool:
 
 def check_server(server_name: str) -> dict:
     """Run fast health check for a single MCP server."""
-    mcp_dir = Path(get_vault_path()) / "dex-core" / "core" / "mcp"
+    mcp_dir = Path(get_vault_path()) / "core" / "mcp"
     module_file = SERVER_MODULES.get(server_name)
 
     if not module_file:
-        # Not a known dex-core server — might be user-added, skip
+        # Not a known Dex core server — might be user-added, skip
         return {"status": "unknown", "note": "Not a core Dex server"}
 
     full_path = mcp_dir / module_file
@@ -143,7 +143,7 @@ def check_server(server_name: str) -> dict:
         return {
             "status": "error",
             "error": f"Server file not found: {module_file}",
-            "humanError": f"{label} is missing — dex-core may need reinstalling",
+            "humanError": f"{label} is missing — Dex may need reinstalling",
         }
 
     # Check 2: Can Python parse it? (syntax check, no execution)
@@ -286,7 +286,7 @@ def format_errors(max_errors: int = 3) -> str:
 
 
 if __name__ == "__main__":
-    # Called from session-start.sh
+    # Called from .codex/hooks/session-start.cjs
     health = run_preflight()
     preflight_output = format_output(health)
     error_output = format_errors()

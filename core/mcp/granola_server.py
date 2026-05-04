@@ -2,7 +2,7 @@
 # ============================================================================
 # DEPRECATED: Background sync now uses Granola's direct API (api.granola.ai)
 # via sync-from-granola.cjs. This file is kept for reference only.
-# See: .claude/reference/meeting-intel.md
+# See: docs/meeting-intelligence.md
 # ============================================================================
 """
 Granola Meeting Notes MCP Server for Dex

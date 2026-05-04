@@ -64,7 +64,7 @@ The migration is safe to run on existing vaults - it scans your files and conver
 <!-- 
 Future topics to cover:
 - How does Dex differ from vanilla Obsidian?
-- What data does Dex/Claude have access to?
+- What data does Dex/Codex have access to?
 - Can I use Dex without Obsidian?
 - How do I back up my vault?
 - What happens if I stop using Dex?

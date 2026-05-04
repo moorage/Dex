@@ -4,7 +4,7 @@
 enabled: true
 package: slack-mcp-server
 auth_type: cookie
-# Credential stored in Claude Desktop config for security
+# Credential stored in Dex's repo-local MCP config
 
 # Integration hooks
 hooks:

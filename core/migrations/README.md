@@ -59,7 +59,7 @@ git merge upstream/release
 **Step 6: Test**
 
 Run key workflows to verify everything works:
-- `/daily-plan`
+- `$daily-plan`
 - Open person pages
 - Check tasks
 

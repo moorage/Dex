@@ -66,7 +66,8 @@ class DateTimeEncoder(json.JSONEncoder):
 BASE_DIR = Path(os.environ.get('VAULT_PATH', Path.cwd()))
 BACKLOG_FILE = BASE_DIR / 'System' / 'Dex_Backlog.md'
 SYSTEM_DIR = BASE_DIR / 'System'
-CHANGELOG_FILE = BASE_DIR / '06-Resources' / 'Claude_Code_Docs' / 'changelog-log.md'
+CHANGELOG_FILE = BASE_DIR / '06-Resources' / 'Agent_Tooling' / 'changelog-log.md'
+CAPABILITIES_REPORTS_DIR = BASE_DIR / '06-Resources' / 'Intel' / 'Agent_Tooling' / 'reports'
 SESSION_LEARNINGS_DIR = BASE_DIR / 'System' / 'Session_Learnings'
 SYNTHESIS_STATE_FILE = BASE_DIR / 'System' / '.synthesis-state.json'
 
@@ -437,7 +438,7 @@ def insert_idea_into_priority_queue(idea_id: str, title: str, description: str, 
     lines = [f"- **[{idea_id}]** {title}"]
     if author:
         lines.append(f"  - **Author:** {author}")
-    lines.append(f"  - **Score:** {score}{'' if score > 0 else ' (not yet ranked - run `/dex-backlog` to calculate)'}")
+    lines.append(f"  - **Score:** {score}{'' if score > 0 else ' (not yet ranked - use $dex-backlog to calculate)'}")
     lines.append(f"  - **Category:** {category}")
     lines.append(f"  - **Captured:** {captured_date}")
     if source:
@@ -488,9 +489,9 @@ AI_SHELF_LIFE_DAYS = 30
 AI_LOW_CONVICTION_SCORE = 55
 
 def _scan_skill_names() -> List[Dict[str, str]]:
-    """Scan .claude/skills/ for available skill names and descriptions."""
+    """Scan Codex skill entrypoints for overlap with backlog ideas."""
     skills = []
-    skills_dir = BASE_DIR / '.claude' / 'skills'
+    skills_dir = BASE_DIR / '.agents' / 'skills'
     if not skills_dir.exists():
         return skills
     for skill_dir in skills_dir.iterdir():
@@ -551,10 +552,9 @@ def _scan_shipped_wip() -> List[Dict[str, str]]:
 def _scan_capabilities_done() -> List[str]:
     """Read latest capabilities report for items marked Done in the backlog table."""
     done_items = []
-    reports_dir = BASE_DIR / '06-Resources' / 'Intel' / 'Claude_Code_Intel' / 'reports'
-    if not reports_dir.exists():
+    if not CAPABILITIES_REPORTS_DIR.exists():
         return done_items
-    report_files = sorted(reports_dir.glob('capabilities-*.md'), reverse=True)
+    report_files = sorted(CAPABILITIES_REPORTS_DIR.glob('capabilities-*.md'), reverse=True)
     if not report_files:
         return done_items
     try:
@@ -628,7 +628,7 @@ def validate_backlog_ideas() -> Dict[str, Any]:
                 skill_name = st.split(' ')[0]
                 best_action = 'kill'
                 best_confidence = round(sim, 2)
-                best_reason = f"Skill /{skill_name} already provides this capability"
+                best_reason = f"Skill ${skill_name} already provides this capability"
 
         # --- Redundancy Check 2: MCP tool overlap ---
         for mt in mcp_texts:
@@ -726,8 +726,8 @@ Welcome to your Dex system improvement backlog! This file tracks ideas for makin
 ## How It Works
 
 1. **Capture ideas** anytime using the `capture_idea` MCP tool
-2. **Review regularly** with `/dex-backlog` to see AI-ranked priorities
-3. **Workshop ideas** by running `/dex-improve [idea title]`
+2. **Review regularly** with `$dex-backlog` to see AI-ranked priorities
+3. **Workshop ideas** by using `$dex-improve [idea title]`
 4. **Mark implemented** when you build an idea
 
 Ideas are automatically ranked on 5 dimensions:
@@ -743,7 +743,7 @@ Ideas are automatically ranked on 5 dimensions:
 
 ## Priority Queue
 
-<!-- Auto-ranked by /dex-backlog command -->
+<!-- Auto-ranked by $dex-backlog -->
 
 ### 🔥 High Priority (Score: 85+)
 
@@ -765,7 +765,7 @@ Ideas are automatically ranked on 5 dimensions:
 
 ---
 
-*Run `/dex-backlog` to rank your ideas based on current system state.*
+*Use `$dex-backlog` to rank your ideas based on current system state.*
 """
     
     BACKLOG_FILE.write_text(content)
@@ -944,7 +944,7 @@ async def handle_list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="synthesize_changelog",
-            description="Scan Anthropic Claude Code changelog for new features relevant to Dex. Creates new backlog ideas or enriches existing ones with 'Why Now?' evidence. Call during /dex-whats-new or /daily-plan.",
+            description="Scan the tracked agent tooling changelog for new features relevant to Dex. Creates new backlog ideas or enriches existing ones with 'Why Now?' evidence. Call during $dex-whats-new or $daily-plan.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -982,11 +982,11 @@ async def handle_list_tools() -> list[types.Tool]:
                     },
                     "evidence": {
                         "type": "string",
-                        "description": "The new evidence or signal (e.g., 'Claude Code v2.1.32 shipped native memory support')"
+                        "description": "The new evidence or signal (e.g., 'Agent tooling v2.1.32 shipped native memory support')"
                     },
                     "source": {
                         "type": "string",
-                        "description": "Where this evidence came from (e.g., 'Anthropic Changelog v2.1.32')"
+                        "description": "Where this evidence came from (e.g., 'Agent tooling changelog v2.1.32')"
                     }
                 },
                 "required": ["idea_id", "evidence", "source"]
@@ -994,7 +994,7 @@ async def handle_list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="validate_backlog",
-            description="Run redundancy and staleness checks on all active backlog ideas. Checks against existing skills, MCP tools, shipped WIP items, and capabilities reports. Returns flagged ideas to kill, downrank, or archive. Call before /dex-backlog scoring or after /capabilities-report.",
+            description="Run redundancy and staleness checks on all active backlog ideas. Checks against existing skills, MCP tools, shipped WIP items, and capabilities reports. Returns flagged ideas to kill, downrank, or archive. Call before $dex-backlog scoring or after a capabilities report review.",
             inputSchema={
                 "type": "object",
                 "properties": {}
@@ -1064,10 +1064,10 @@ async def _handle_call_tool_inner(
                 "idea_id": idea_id,
                 "title": title,
                 "category": category,
-                "message": "Idea captured successfully! Run `/dex-backlog` to see it ranked against other ideas.",
+                "message": "Idea captured successfully. Use $dex-backlog to see it ranked against other ideas.",
                 "next_steps": [
-                    "Run `/dex-backlog` to see AI-powered ranking",
-                    "Run `/dex-improve \"{title}\"` to workshop this idea",
+                    "Use $dex-backlog to see AI-powered ranking",
+                    f"Use $dex-improve for {title} to workshop this idea",
                     "Check `System/Dex_Backlog.md` to see all your ideas"
                 ]
             }
@@ -1107,7 +1107,7 @@ async def _handle_call_tool_inner(
             "ideas": ideas,
             "count": len(ideas),
             "filters_applied": arguments or {},
-            "note": "Scores are calculated by `/dex-backlog`. Run it to get AI-powered rankings."
+            "note": "Scores are calculated by $dex-backlog. Use that skill to refresh AI-powered rankings."
         }
         
         return [types.TextContent(type="text", text=json.dumps(result, indent=2, cls=DateTimeEncoder))]
@@ -1218,7 +1218,7 @@ async def _handle_call_tool_inner(
             },
             "last_changelog_synthesis": state.get("last_changelog_synthesis"),
             "last_learnings_synthesis": state.get("last_learnings_synthesis"),
-            "note": "Run `/dex-backlog` to update scores based on current system state"
+            "note": "Use $dex-backlog to update scores based on current system state."
         }
         
         return [types.TextContent(type="text", text=json.dumps(result, indent=2, cls=DateTimeEncoder))]
@@ -1273,8 +1273,8 @@ async def _handle_call_tool_inner(
 
             if best_match and best_similarity > 0.4:
                 version_info = entry.get('version', '')
-                evidence = f"Claude Code {version_info} ({entry['date']}): {feature_text}"
-                enrich_result = enrich_idea_in_backlog(best_match['id'], evidence, f"Anthropic Changelog {version_info}")
+                evidence = f"Agent tooling {version_info} ({entry['date']}): {feature_text}"
+                enrich_result = enrich_idea_in_backlog(best_match['id'], evidence, f"Agent tooling changelog {version_info}")
                 if enrich_result.get('success'):
                     ideas_enriched += 1
                     synthesis_details.append({
@@ -1290,10 +1290,10 @@ async def _handle_call_tool_inner(
                 category = infer_category_from_feature(feature_text)
                 version_info = entry.get('version', '')
                 description = (
-                    f"Claude Code {version_info} ({entry['date']}) shipped: {feature_text}. "
+                    f"Agent tooling {version_info} ({entry['date']}) shipped: {feature_text}. "
                     f"Evaluate how Dex could leverage this for user workflows."
                 )
-                source = "Anthropic Changelog Synthesis"
+                source = "Agent Tooling Changelog Synthesis"
 
                 success = add_ai_idea_to_backlog(idea_id, title, description, category, source)
                 if success:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 MCP Server for Dex Session Memory System
-Exposes conversation intelligence from the dex-app SQLite DB to Cursor/CLI.
+Exposes conversation intelligence from the dex-app SQLite DB to Dex clients such as Codex.
 
 Read-only access to:
 - Sessions (search, context, summaries)

@@ -23,13 +23,13 @@ Obsidian is a free markdown editor with powerful graph visualization. It's compl
 
 1. Download Obsidian (free): https://obsidian.md
 2. Open your Dex vault: File → Open Folder → Select your Dex directory
-3. Enable Obsidian mode: Run `/dex-obsidian-setup` in Cursor/Claude
+3. Enable Obsidian mode: Run `/dex-obsidian-setup` in Codex
 
-## Obsidian vs Terminal/Cursor
+## Obsidian vs Codex
 
 Both are first-class experiences:
 
-| Feature | Obsidian | Terminal/Cursor |
+| Feature | Obsidian | Codex |
 |---------|----------|----------------|
 | Graph visualization | ✅ Yes | ❌ No |
 | Clickable navigation | ✅ Wiki links | ⚡ File search |
@@ -37,7 +37,7 @@ Both are first-class experiences:
 | AI integration | ❌ Limited | ✅ Native |
 | Speed | ⚡ Fast | ⚡⚡ Faster |
 
-**Recommendation:** Use both! Obsidian for visual navigation and reading, Cursor/Claude for AI-powered workflows.
+**Recommendation:** Use both! Obsidian for visual navigation and reading, Codex for AI-powered workflows.
 
 ## Setting Up Later
 
@@ -78,7 +78,7 @@ Consider these community plugins for enhanced Dex experience:
 
 If you enable the sync daemon (via `/dex-obsidian-setup`):
 - Check a task box in Obsidian → syncs to Tasks.md, person pages, meeting notes
-- Check a task in Cursor → syncs to Obsidian
+- Check a task in Codex → syncs to Obsidian
 - Works bidirectionally, zero maintenance
 
 ## Troubleshooting

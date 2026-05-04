@@ -1,6 +1,6 @@
 #!/bin/bash
 # Check system capabilities for local AI models
-# Used by /ai-setup skill
+# Used by the $ai-setup skill
 
 echo "=== System Check for Local AI ==="
 echo ""

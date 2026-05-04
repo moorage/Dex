@@ -134,7 +134,7 @@ echo "  ${GREEN}✓${NC} Updated $YAML_UPDATED YAML files"
 
 # Step 4: Update skill files
 echo "  Updating skill references..."
-find .claude/skills -type f -name "*.md" | while read -r file; do
+find .agents/skills -type f -name "*.md" | while read -r file; do
     if grep -q "03-Tasks" "$file"; then
         if [[ "$OSTYPE" == "darwin"* ]]; then sed -i '' 's/03-Tasks/03-Backlog/g' "$file"; else sed -i 's/03-Tasks/03-Backlog/g' "$file"; fi
     fi

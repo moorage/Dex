@@ -1,6 +1,6 @@
 # 🐛 Quick Update: Path Bug Fixed
 
-**TL;DR:** A bug was hiding in plain sight. Run `/dex-update` to fix it.
+**TL;DR:** A bug was hiding in plain sight. Run `$dex-update` to fix it.
 
 ---
 
@@ -20,19 +20,19 @@ These paths slipped through because everything worked perfectly... on my compute
 
 | Feature | Impact |
 |---------|--------|
-| `/dex-obsidian-setup` | Wouldn't work at all |
+| `$dex-obsidian-setup` | Wouldn't work at all |
 | Background automation | Changelog checker and learning review scripts wouldn't run |
 | Some maintenance scripts | Would fail if you tried to run them manually |
 
 **Not affected (these always worked fine):**
-- ✅ `/daily-plan`, `/daily-review`, `/week-plan`, `/week-review`
+- ✅ `$daily-plan`, `$daily-review`, `$week-plan`, `$week-review`
 - ✅ Task management and syncing
-- ✅ Meeting processing (`/process-meetings`)
+- ✅ Meeting processing (`$process-meetings`)
 - ✅ Person and project pages
 - ✅ Career features
 - ✅ All your data (nothing was lost or corrupted)
 
-So if you hadn't tried `/dex-obsidian-setup` or the background scripts, you probably didn't notice anything wrong. But now those features will actually work!
+So if you hadn't tried `$dex-obsidian-setup` or the background scripts, you probably didn't notice anything wrong. But now those features will actually work!
 
 ---
 

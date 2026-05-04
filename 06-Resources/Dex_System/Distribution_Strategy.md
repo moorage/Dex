@@ -63,9 +63,9 @@ System/pillars.yaml
 System/.last-update-check
 
 # Custom extensions
-CLAUDE-custom.md                     # User prompt overrides
-.claude/skills-custom/               # User custom skills
 core/mcp-custom/                     # User custom MCP servers
+scripts/private/                     # User private automation
+System/my-customizations.md          # User customization notes
 
 # User data (PARA structure)
 00-Inbox/
@@ -89,7 +89,7 @@ These files are tracked and update cleanly:
 
 ```
 # Core skills (users don't usually modify)
-.claude/skills/
+.agents/skills/
 
 # Core MCP servers
 core/mcp/*.py
@@ -116,8 +116,8 @@ package.json
 Keep custom work separate:
 
 ```
-.claude/skills/           ← Our skills (updateable)
-.claude/skills-custom/    ← User skills (protected)
+.agents/skills/           ← Our skills (updateable)
+scripts/private/          ← User private automation (protected)
 
 core/mcp/                 ← Our servers (updateable)
 core/mcp-custom/          ← User servers (protected)
@@ -125,18 +125,15 @@ core/mcp-custom/          ← User servers (protected)
 
 ### Pattern 2: Override Files
 
-Instead of editing `CLAUDE.md`, users create:
+Instead of editing `AGENTS.md`, users keep personal settings in:
 
 ```
-CLAUDE-custom.md          ← Gitignored, user-specific
+System/user-profile.yaml  ← Communication and identity settings
+System/pillars.yaml       ← Strategic priorities
+System/customizations.md  ← Optional user-only workflow notes
 ```
 
-At end of `CLAUDE.md`:
-```markdown
-<!-- If CLAUDE-custom.md exists, load it for user overrides -->
-```
-
-This way updates to `CLAUDE.md` never conflict with user changes.
+This way updates to `AGENTS.md` rarely conflict with user changes.
 
 ### Pattern 3: Namespace Separation
 
@@ -245,7 +242,7 @@ Conflicts occur when both the user AND the main repo modified the same file.
 **Example:**
 ```bash
 $ git merge upstream/release
-CONFLICT (content): Merge conflict in CLAUDE.md
+CONFLICT (content): Merge conflict in AGENTS.md
 ```
 
 ### Resolution Strategy by File Type
@@ -254,20 +251,20 @@ CONFLICT (content): Merge conflict in CLAUDE.md
 |-----------|-------------------|
 | User data (00-07/) | **Always keep user version** |
 | System config (user-profile.yaml) | **Always keep user version** |
-| Core skills (.claude/skills/) | **Keep upstream** (unless user customized) |
+| Core skills (.agents/skills/) | **Keep upstream** (unless user customized) |
 | MCP servers (core/mcp/) | **Keep upstream** (unless user customized) |
-| CLAUDE.md | **Tricky - review both** |
+| AGENTS.md | **Tricky - review both** |
 | Documentation | **Keep upstream** (usually) |
 
-### Handling CLAUDE.md Conflicts
+### Handling AGENTS.md Conflicts
 
-Since CLAUDE.md is central and users might customize it:
+Since `AGENTS.md` is central and should stay canonical:
 
 **Recommended:**
-- Point users to override pattern (`CLAUDE-custom.md`)
+- Point users to `System/user-profile.yaml`, `System/pillars.yaml`, and separate notes under `System/`
 - During conflict, examine both versions
-- If user made significant changes, suggest moving them to `CLAUDE-custom.md`
-- Then accept upstream version of `CLAUDE.md`
+- If user made significant changes, suggest moving them out of `AGENTS.md` into those mutable files
+- Then accept the upstream version of `AGENTS.md`
 
 This prevents future conflicts while preserving user customizations.
 
@@ -377,7 +374,7 @@ git merge upstream/release
 
 1. **Set up upstream remote** immediately after cloning
 2. **Check updates monthly** (or when notified)
-3. **Keep custom work in protected folders** (skills-custom/, mcp-custom/)
+3. **Keep custom work in protected folders** (`core/mcp-custom/`, `scripts/private/`)
 4. **Document customizations** in `System/my-customizations.md`
 5. **Back up before major updates**
 
@@ -450,7 +447,7 @@ Track update-related problems:
 - **User Guide:** `06-Resources/Dex_System/Updating_Dex.md`
 - **Migration README:** `core/migrations/README.md`
 - **Technical Guide:** `06-Resources/Dex_System/Dex_Technical_Guide.md` (MCP section)
-- **Skills Catalog:** `.claude/skills/README.md`
+- **Skills Catalog:** `.agents/skills/`
 
 ---
 

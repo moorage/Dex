@@ -1,0 +1,150 @@
+{
+  "mcpServers": {
+    "work-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "work_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "calendar-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "calendar_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "granola-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "granola_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "career-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "career_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "dex-improvements-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "dex_improvements_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "resume-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "resume_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "update-checker": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "update_checker.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "onboarding-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "onboarding_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "dex-analytics": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "analytics_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}",
+        "DEX_ANALYTICS_MODE": "proxy",
+        "DEX_ANALYTICS_ENDPOINT": "",
+        "DEX_ANALYTICS_PROXY_TOKEN": ""
+      }
+    },
+    "session-memory": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "session_memory_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "beta-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "beta_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "commitment-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "commitment_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    },
+    "demo-mode-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "{{VAULT_PATH}}/core/scripts/run-dex-mcp.cjs",
+        "demo_mode_server.py"
+      ],
+      "env": {
+        "VAULT_PATH": "{{VAULT_PATH}}"
+      }
+    }
+  }
+}

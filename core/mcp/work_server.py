@@ -951,7 +951,7 @@ def query_meeting_cache_data(
             'meetings': [],
             'total': 0,
             'cache_available': False,
-            'guidance': 'No meeting cache found. Run the meeting cache builder: node .claude/hooks/meeting-cache-builder.cjs',
+            'guidance': 'No meeting cache found. Rebuild it with: node .codex/hooks/meeting-cache-builder.cjs',
         }
 
     meetings = cache.get('meetings', [])

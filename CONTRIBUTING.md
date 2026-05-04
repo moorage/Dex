@@ -2,7 +2,7 @@
 
 You've been using Dex. Maybe you fixed something that was bugging you. Maybe you built a new skill, connected a new tool, or wrote a guide that would've saved you an hour on day one. Whatever it is — Dave would love to see it.
 
-**You don't need to be a developer to contribute.** If you can use Dex, you can share improvements. Claude will help you with the technical bits.
+**You don't need to be a developer to contribute.** If you can use Dex, you can share improvements. Codex can help with the technical bits.
 
 ---
 
@@ -24,15 +24,15 @@ Anything that makes Dex better for someone else:
 ### The simple version (recommended)
 
 1. **Make your changes in Dex as normal** — fix the bug, build the skill, write the guide
-2. **Ask Claude to help you share it.** Say something like:
+2. **Ask Codex to help you share it.** Say something like:
 
    > "I made some improvements to Dex that I'd like to share back with the community. Can you help me create a pull request?"
 
-3. Claude will walk you through it — creating a branch, describing what you changed, and submitting it. You don't need to know what any of those words mean. Just follow along.
+3. Codex will walk you through it — creating a branch, describing what you changed, and submitting it. You don't need to know the git mechanics in advance.
 
 4. **Your changes appear on GitHub** for review. Dave will take a look, give feedback if needed, and merge it in.
 
-That's it. Claude handles the git mechanics. You just describe what you changed and why.
+That's it. Codex handles the git mechanics. You just describe what you changed and why.
 
 ### What makes a good contribution
 
@@ -43,7 +43,7 @@ That's it. Claude handles the git mechanics. You just describe what you changed 
 
 ### What to avoid
 
-- **Personal data.** Double-check that your real names, companies, emails, and meeting content aren't in the files you're sharing. Ask Claude: "Can you check these files for any personal information before I share them?"
+- **Personal data.** Double-check that your real names, companies, emails, and meeting content aren't in the files you're sharing. Ask Codex to review the files for personal information before you share them.
 - **Breaking existing features.** If you're not sure whether your change might affect something else, mention that in your description. Dave would rather know upfront than discover it later.
 
 ---
@@ -76,7 +76,7 @@ Describe:
 
 ## A Note on AI-Assisted Contributions
 
-Most Dex contributions are written with AI help — and that's not just OK, it's the point. Dex is an AI-powered system built by people who use AI daily. If Claude helped you write the code, that's great. Just make sure you understand what it does and that you've tested it.
+Most Dex contributions are written with AI help — and that's not just OK, it's the point. Dex is an AI-powered system built by people who use AI daily. If Codex helped you write the code, that's fine. Just make sure you understand what it does and that you've tested it.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Career MCP Server provides deterministic data aggregation for career development, making the `/career-coach` command faster, more consistent, and trackable over time.
+The Career MCP Server provides deterministic data aggregation for career development, making the `$career-coach` skill faster, more consistent, and trackable over time.
 
 ## What It Does
 
@@ -83,7 +83,7 @@ core/mcp/
 - Staleness flags (no evidence in 90+ days)
 - Growth velocity (accelerating/stable/decelerating)
 
-## How `/career-coach` Uses It
+## How `$career-coach` Uses It
 
 ### Before (LLM-only):
 1. Read 20+ evidence files individually (expensive, slow)
@@ -106,7 +106,7 @@ core/mcp/
 
 ## Configuration
 
-Already added to `System/.mcp.json.example`:
+Already added to `.mcp.json.example`:
 
 ```json
 {
@@ -131,7 +131,7 @@ All tests should pass with ✓ markers.
 
 ## Data Flow Example
 
-**User runs `/career-coach` → Promotion Assessment mode:**
+**User uses `$career-coach` in Promotion Assessment mode:**
 
 ```
 1. MCP: scan_evidence()
@@ -191,4 +191,4 @@ Track these to validate value:
 
 **Built:** January 2026  
 **Status:** Production-ready  
-**Integration:** `/career-coach` command
+**Integration:** `$career-coach`

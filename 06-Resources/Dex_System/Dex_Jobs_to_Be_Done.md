@@ -12,13 +12,13 @@ This document explains the purpose behind your Dex system. If you're new to the 
 
 A personal knowledge system that handles the cognitive overhead of professional life. Notes find their home. Tasks don't slip through cracks. People stay tracked. Your days start focused and end with reflection.
 
-The AI (Claude) acts as your knowledge assistant - helping you capture, organize, and act on information without drowning in process.
+The AI (Codex) acts as your knowledge assistant - helping you capture, organize, and act on information without drowning in process.
 
 ### What Makes It Different
 
 Traditional note systems are passive filing cabinets. Dex is active:
 
-- **AI-augmented**: Claude helps process, organize, and surface information
+- **AI-augmented**: Codex helps process, organize, and surface information
 - **Workflow-driven**: Commands guide you through daily and weekly rhythms
 - **Task-aware**: MCP server ensures tasks are validated, deduplicated, and prioritized
 - **Adaptable**: Pillars and structure customize to your role and priorities
@@ -43,13 +43,13 @@ Each job represents something that needs to happen reliably. The system exists t
 
 | Component | What It Does |
 |-----------|--------------|
-| Conversational capture | Just tell Claude things naturally - "Sarah worried about timeline but interested in Q2 pilot" |
+| Conversational capture | Just tell Codex things naturally - "Sarah worried about timeline but interested in Q2 pilot" |
 | Strategic routing | Uses your Week Priorities and Quarterly Goals to suggest routing in real-time |
-| Immediate suggestions | Claude: "Should I add this to Sarah's person page and Q2 Planning project?" |
+| Immediate suggestions | Codex: "Should I add this to Sarah's person page and Q2 Planning project?" |
 | Work MCP for tasks | "Create task to finalize pricing" → validates, checks duplicates, writes to Tasks.md |
 | `/triage` for cleanup | Finds orphaned files and scattered tasks, routes strategically |
 
-**Example Flow**: You mention "Sarah seemed worried about timeline but interested in Q2 pilot". Claude immediately suggests: "I see you have 'Sarah's team onboarding' and 'Q2 Planning' in your Week Priorities. Should I add this to Sarah's person page and the Q2 Planning project?" You approve, it's filed. One decision, instant routing.
+**Example Flow**: You mention "Sarah seemed worried about timeline but interested in Q2 pilot". Codex immediately suggests: "I see you have 'Sarah's team onboarding' and 'Q2 Planning' in your Week Priorities. Should I add this to Sarah's person page and the Q2 Planning project?" You approve, it's filed. One decision, instant routing.
 
 ---
 
@@ -83,7 +83,7 @@ Each job represents something that needs to happen reliably. The system exists t
 |-----------|--------------|
 | `People/` folder | One page per person with aggregated context |
 | `Companies/` folder | Organization-level aggregation of people, meetings, tasks |
-| Person lookup skill | Claude checks People folder first before any search |
+| Person lookup skill | Codex checks People folder first before any search |
 | Meeting capture | Identifies people mentioned, updates their pages |
 | `/meeting-prep` command | Surfaces context about attendees before calls |
 | `refresh_company` tool | Pulls all related context into company page |
@@ -128,19 +128,19 @@ For organization-level context, check company pages in `05-Areas/Companies/`. Sh
 | `/journal` command | Morning, evening, or weekly reflection prompts |
 | `/review` command | End-of-day synthesis of what happened, captures learnings |
 | `/week` command | Weekly pattern recognition and planning |
-| Background changelog monitor | Checks every 6 hours for Claude updates, alerts you automatically |
+| Background changelog monitor | Checks every 6 hours for Codex updates, alerts you automatically |
 | Learning review prompts | Daily check: when 5+ learnings pending, reminds you to review |
 | `Mistake_Patterns.md` | Logged mistakes become rules that prevent repetition |
 | `Working_Preferences.md` | Collaboration style captured and applied consistently |
 | Session learnings capture | Automatic logging in `System/Session_Learnings/` |
 
-**v1.11.0**: Learning heartbeat now focused on operational knowledge only. Preferences are handled by Claude's built-in memory, so session learnings are cleaner and less noisy.
+**v1.11.0**: Learning heartbeat now focuses on operational knowledge only. Preferences are handled by the agent's built-in memory, so session learnings stay cleaner and less noisy.
 
 **Example Flow**: Friday afternoon, run `/week`. Dex synthesizes the week: themes that emerged, energy patterns (what energized vs drained you), progress by project, questions that came up. You spot a pattern - every meeting with Team X drains energy. That's useful data for next week's planning.
 
 During the week, you mentioned "I prefer summaries in bullet points." Dex captured this in Session_Learnings and now asks: "You've mentioned this preference 3 times. Add to Working_Preferences.md so all future summaries use bullets?"
 
-**Why automation matters**: Next week, when you start a session at 5pm, Dex notices: "📚 You have 7 pending learnings from this week" and prompts a review. You also see: "🆕 New Claude Code features detected!" because background monitoring found updates. The system improves itself quietly.
+**Why automation matters**: Next week, when you start a session at 5pm, Dex notices: "📚 You have 7 pending learnings from this week" and prompts a review. You also see: "🆕 New Codex features detected!" because background monitoring found updates. The system improves itself quietly.
 
 ---
 
@@ -204,7 +204,7 @@ Three months later, you run `/career-coach` → Promotion Assessment. Dex analyz
 | `/dex-level-up` command | Discovers unused features based on what you actually use |
 | Learning capture | During `/review`, captures what you learned for future improvements |
 
-**v1.11.0**: Vault maintenance tool for system hygiene. Memory ownership is documented (what Dex stores vs what Claude remembers). Named sessions guide for project continuity across conversations.
+**v1.11.0**: Vault maintenance tool for system hygiene. Memory ownership is documented (what Dex stores vs what the agent remembers). Named sessions guide for project continuity across conversations.
 
 **Example Flow**: During `/review`, you realize: "I keep forgetting to check task dependencies. We should auto-suggest blocked-by relationships."
 
@@ -333,13 +333,13 @@ This document evolves as your Dex grows. When you:
 - Build automations, document what job they address
 - Discover workflow gaps, that might be a job waiting to be served
 
-The Documentation Sync behavior in CLAUDE.md ensures this stays current.
+Keep this document aligned with `AGENTS.md` and the Codex-facing system docs as Dex evolves.
 
 ---
 
 ## Related Documents
 
-- `CLAUDE.md` - Core system configuration
+- `AGENTS.md` - Core Codex project instructions
 - `06-Resources/Dex_System/Dex_System_Guide.md` - How to use every feature
 - `System/pillars.yaml` - Your strategic priorities
 

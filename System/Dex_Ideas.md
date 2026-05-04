@@ -7,7 +7,7 @@ Welcome to your PKM improvement ideas! This file tracks ideas for making Dex bet
 ## How It Works
 
 1. **Capture ideas** anytime using the `capture_idea` MCP tool
-2. **Review regularly** with `/review-ideas` to see AI-ranked priorities
+2. **Review regularly** with `$review-ideas` to see AI-ranked priorities
 3. **Workshop ideas** by running `/dex-improve [idea title]`
 4. **Mark implemented** when you build an idea
 
@@ -75,4 +75,4 @@ Ideas are automatically ranked on 5 dimensions:
 
 ---
 
-*Run `/review-ideas` to re-rank ideas based on current system state.*
+*Run `$review-ideas` to re-rank ideas based on current system state.*

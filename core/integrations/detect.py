@@ -3,13 +3,14 @@
 Integration Detection Helper
 
 Detects existing MCP configurations for Notion, Slack, and Google.
-Used by onboarding and /dex-update to offer smart upgrade paths.
+Used by onboarding and $dex-update to offer smart upgrade paths.
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Optional, TypedDict
+
+from .mcp_config import get_mcp_config_path, load_mcp_config
 
 
 class IntegrationStatus(TypedDict):
@@ -71,37 +72,9 @@ KNOWN_PACKAGES = {
 }
 
 
-def get_claude_config_path() -> Optional[Path]:
-    """Find Claude Desktop config file."""
-    # macOS
-    mac_path = Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json"
-    if mac_path.exists():
-        return mac_path
-    
-    # Windows
-    win_path = Path(os.environ.get("APPDATA", "")) / "Claude" / "claude_desktop_config.json"
-    if win_path.exists():
-        return win_path
-    
-    # Linux
-    linux_path = Path.home() / ".config" / "Claude" / "claude_desktop_config.json"
-    if linux_path.exists():
-        return linux_path
-    
-    return None
-
-
-def load_claude_config() -> Optional[dict]:
-    """Load Claude Desktop MCP configuration."""
-    config_path = get_claude_config_path()
-    if not config_path:
-        return None
-    
-    try:
-        with open(config_path) as f:
-            return json.load(f)
-    except (json.JSONDecodeError, IOError):
-        return None
+def get_mcp_config_display_path() -> Path:
+    """Return the repo-local MCP config path used by Dex on Codex."""
+    return get_mcp_config_path()
 
 
 def detect_integration(service: str, config: dict) -> IntegrationStatus:
@@ -110,7 +83,7 @@ def detect_integration(service: str, config: dict) -> IntegrationStatus:
         "installed": False,
         "package": None,
         "version": None,
-        "config_path": str(get_claude_config_path()),
+        "config_path": str(get_mcp_config_display_path()),
         "is_dex_recommended": False,
         "recommendation": None
     }
@@ -151,7 +124,7 @@ def detect_integration(service: str, config: dict) -> IntegrationStatus:
 
 def detect_all_integrations() -> DetectionResult:
     """Detect all productivity integrations."""
-    config = load_claude_config() or {}
+    config = load_mcp_config()
     
     result: DetectionResult = {
         "notion": detect_integration("notion", config),

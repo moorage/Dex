@@ -1,16 +1,6 @@
 ---
 name: process-meetings
 description: Process synced Granola meetings to update person pages, extract tasks, and organize meeting notes
-model_hint: balanced
-context: fork
-hooks:
-  PostToolUse:
-    - matcher: Write
-      type: command
-      command: "node .Codex/hooks/post-meeting-person-update.cjs"
-  Stop:
-    - type: command
-      command: "node .Codex/hooks/meeting-summary-generator.cjs"
 ---
 
 # Process Meetings
@@ -66,14 +56,14 @@ ls .scripts/meeting-intel/processed-meetings.json
 **If state file exists:** Background sync is working. Continue to Step 2.
 
 **If state file doesn't exist:**
-> "Background meeting sync isn't set up yet. This runs automatically every 30 minutes so `/process-meetings` doesn't need terminal commands.
+> "Background meeting sync isn't set up yet. This runs automatically every 30 minutes, so you usually won't need to run `$process-meetings` manually.
 >
 > **To set up (one-time, takes 30 seconds):**
 > ```bash
 > cd .scripts/meeting-intel && ./install-automation.sh
 > ```
 >
-> Or run `/process-meetings --setup` and I'll do it for you.
+> Or invoke `$process-meetings` with `--setup` and I'll do it for you.
 >
 > **Requirements:**
 > - Granola app installed ([granola.ai](https://granola.ai))
@@ -279,7 +269,7 @@ For each meeting with unextracted tasks:
 **If no meetings found:**
 > "No meetings synced in the last 7 days. Make sure:
 > 1. Granola is running during your meetings
-> 2. Background sync is set up (run `/process-meetings --setup`)
+> 2. Background sync is set up (invoke `$process-meetings` with `--setup`)
 > 3. Check logs: `.scripts/logs/meeting-intel.stdout.log`"
 
 **If background sync isn't running:**
@@ -291,22 +281,22 @@ For each meeting with unextracted tasks:
 ## Examples
 
 ```
-/process-meetings
+$process-meetings
 ```
 > "Found 8 synced meetings. Updating 12 person pages, extracting 5 tasks..."
 
 ```
-/process-meetings today
+$process-meetings today
 ```
 > "Found 2 meetings from today. Processing..."
 
 ```
-/process-meetings --setup
+$process-meetings --setup
 ```
 > "Installing background automation..." [runs install script]
 
 ```
-/process-meetings --people-only
+$process-meetings --people-only
 ```
 > "Updating person and company pages only (skipping task extraction)..."
 

@@ -1,9 +1,9 @@
 # Memory Ownership Boundaries
 
-## Claude Auto-Memory (native)
+## Agent Auto-Memory (native)
 **Owns:** Preferences, style, communication patterns, formatting choices
 **Examples:** "User prefers bullet points", "Use neutral mermaid theme", "Direct communication style"
-**How it works:** Automatically captured by Claude. Persists across all sessions and harnesses.
+**How it works:** Automatically captured by the agent. Persists across all sessions and harnesses.
 **Dex action:** Don't duplicate. Don't capture preferences in learning-heartbeat.
 
 ## Agent Memory (frontmatter, `memory: project`)

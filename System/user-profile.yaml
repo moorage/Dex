@@ -49,7 +49,7 @@ communication:
 # Meeting Processing Configuration
 # How Dex processes meetings from Granola
 meeting_processing:
-  # Mode: "automatic" (notes appear in your vault within 30min) or "manual" (run /process-meetings)
+  # Mode: "automatic" (notes appear in your vault within 30min) or "manual" (use $process-meetings)
   mode: automatic
   
   # API provider for automatic mode: gemini, anthropic, or openai

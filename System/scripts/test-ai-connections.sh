@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test AI model connections
-# Used by /ai-setup and /ai-status skills
+# Used by the $ai-setup and $ai-status skills
 
 echo "=== Testing AI Connections ==="
 echo ""
@@ -37,7 +37,7 @@ if [[ -f "$MODELS_JSON" ]] && grep -q "openrouter" "$MODELS_JSON"; then
     fi
 else
     echo "   Status: Not configured"
-    echo "   Set up with: /ai-setup"
+    echo "   Set up with: $ai-setup"
 fi
 
 echo ""
@@ -72,8 +72,8 @@ fi
 
 echo ""
 
-# Test Claude (default)
-echo "🌟 Claude (Premium):"
+# Test Anthropic (premium)
+echo "🌟 Anthropic (Premium):"
 
 # Check for Anthropic API key
 if [[ -n "$ANTHROPIC_API_KEY" ]]; then
@@ -108,7 +108,7 @@ if command -v ollama &> /dev/null && curl -s http://localhost:11434/api/tags > /
     fi
 fi
 
-echo "Premium (Claude):  ✅ Available"
+echo "Premium (Anthropic): ✅ Available"
 if $BUDGET_OK; then
     echo "Budget Cloud:      ✅ Configured"
 else
@@ -121,4 +121,4 @@ else
 fi
 
 echo ""
-echo "Configure with: /ai-setup"
+echo "Configure with: $ai-setup"

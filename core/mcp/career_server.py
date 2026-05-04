@@ -512,7 +512,7 @@ async def handle_analyze_coverage(arguments: dict) -> list[types.TextContent]:
                 "target_level": ladder_data.get('target_level'),
                 "analysis_date": datetime.now().isoformat(),
                 "total_evidence_files": 0,
-                "note": "No evidence files found. Start capturing achievements with /career-coach",
+                "note": "No evidence files found. Start capturing achievements with $career-coach.",
                 "coverage_by_competency": [
                     {
                         "competency": comp['category'],

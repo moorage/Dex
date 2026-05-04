@@ -7,35 +7,17 @@ Uses mcp-google package with OAuth flow.
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Optional, Tuple
+
+from core.integrations.mcp_config import get_vault_root, load_mcp_config, save_mcp_config
 
 PACKAGE = "mcp-google"
 MCP_CONFIG_KEY = "google"
 
-def get_claude_config_path() -> Path:
-    """Get Claude Desktop config path."""
-    return Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json"
-
-def load_claude_config() -> dict:
-    """Load existing Claude config."""
-    config_path = get_claude_config_path()
-    if config_path.exists():
-        with open(config_path) as f:
-            return json.load(f)
-    return {"mcpServers": {}}
-
-def save_claude_config(config: dict) -> None:
-    """Save Claude config."""
-    config_path = get_claude_config_path()
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(config_path, "w") as f:
-        json.dump(config, f, indent=2)
-
 def is_installed() -> bool:
     """Check if Google MCP is already configured."""
-    config = load_claude_config()
+    config = load_mcp_config()
     return MCP_CONFIG_KEY in config.get("mcpServers", {})
 
 def get_oauth_credentials_path() -> Path:
@@ -133,7 +115,7 @@ def install(credentials_json: str, credentials_path: Optional[str] = None) -> Tu
     # Save credentials
     oauth_path.write_text(credentials_json)
     
-    config = load_claude_config()
+    config = load_mcp_config()
     
     # Add Google MCP configuration
     config.setdefault("mcpServers", {})[MCP_CONFIG_KEY] = {
@@ -146,10 +128,10 @@ def install(credentials_json: str, credentials_path: Optional[str] = None) -> Tu
         }
     }
     
-    save_claude_config(config)
+    save_mcp_config(config)
     
     # Save to Dex integrations config
-    dex_config_path = Path(os.environ.get("DEX_VAULT", ".")) / "System" / "integrations" / "google.yaml"
+    dex_config_path = get_vault_root() / "System" / "integrations" / "google.yaml"
     dex_config_path.parent.mkdir(parents=True, exist_ok=True)
     
     with open(dex_config_path, "w") as f:
@@ -200,7 +182,7 @@ Click "Allow" to grant Dex read-only access to your Google data.
 - Person pages show email communication history
 - Calendar events are enriched with attendee context
 
-**Restart Claude Desktop** to activate the integration.
+**Next step:** Reload Dex MCP servers in Codex or restart your Codex session so the new server is picked up.
 
 **Note:** You only authorize once. To revoke access later, visit:
 [myaccount.google.com/permissions](https://myaccount.google.com/permissions)
@@ -208,18 +190,18 @@ Click "Allow" to grant Dex read-only access to your Google data.
 
 def uninstall() -> Tuple[bool, str]:
     """Remove Google MCP configuration."""
-    config = load_claude_config()
+    config = load_mcp_config()
     
     if MCP_CONFIG_KEY in config.get("mcpServers", {}):
         del config["mcpServers"][MCP_CONFIG_KEY]
-        save_claude_config(config)
+        save_mcp_config(config)
         
         # Also remove credentials
         oauth_path = get_oauth_credentials_path()
         if oauth_path.exists():
             oauth_path.unlink()
         
-        return True, """Google integration removed. Restart Claude Desktop to apply.
+        return True, """Google integration removed. Reload Dex MCP servers or restart Codex to apply.
 
 To also revoke Google's authorization:
 Visit [myaccount.google.com/permissions](https://myaccount.google.com/permissions)
@@ -230,5 +212,5 @@ and remove "Dex" from the list."""
 def test_connection() -> Tuple[bool, str]:
     """Test if Google connection is working."""
     if is_installed():
-        return True, "Google MCP is configured. Restart Claude Desktop if you haven't already."
-    return False, "Google MCP is not configured. Run /integrate-google to set up."
+        return True, "Google MCP is configured. Reload Dex MCP servers if the current Codex session does not see it yet."
+    return False, "Google MCP is not configured. Ask Codex to set up the Google integration."

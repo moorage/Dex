@@ -7,6 +7,29 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.20.0] — Dex Is Now Codex-First End To End (2026-05-04)
+
+Dex no longer relies on Claude Code or Cursor as the active runtime surface.
+
+**What changed:**
+* Added repo-local Codex MCP server wiring in `.codex/config.toml`
+* Unified MCP config generation on root `.mcp.json` and root `.mcp.json.example`
+* Added a cross-platform MCP launcher at `core/scripts/run-dex-mcp.cjs`
+* Added a real Codex onboarding skill at `.agents/skills/onboarding`
+* Rewrote the install flow, README, distribution notes, and active skill guidance for Codex
+* Added `.codex-plugin/plugin.json` as the active plugin packaging surface
+* Moved Google, Notion, and Slack integration setup off `claude_desktop_config.json`
+* Deleted the retired `.claude/skills/` and `.claude/hooks/` trees after porting their active behavior into `.agents/skills/` and `.codex/hooks/`
+* Removed the last runtime compatibility bridges: `CLAUDE_MD`, the top-level `CLAUDE.md` root marker, and `Claude_Code_*` fallback reads
+* Deleted the top-level `CLAUDE.md` file after `AGENTS.md` fully replaced it
+
+**Why you'll care:**
+* A fresh clone now has a real Codex-native instruction, hook, skill, MCP, and plugin story
+* Onboarding, integrations, and MCP runtime no longer depend on Claude Desktop
+* The repo's public setup path now matches the actual Codex implementation
+
+**Migration note:** `.claude/` and `.claude-plugin/` remain only as legacy compatibility or archival material. `CLAUDE.md` has been deleted. `AGENTS.md`, `.codex/`, `.agents/skills/`, and `.codex-plugin/` are now authoritative.
+
 ## [1.19.0] — Semantic Search Now Covers Your Entire Vault (2026-03-23)
 
 ### 🔍 Semantic Search Now Covers Your Entire Vault

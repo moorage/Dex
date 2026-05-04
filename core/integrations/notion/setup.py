@@ -6,35 +6,17 @@ Guides users through connecting Notion to Dex using the official MCP.
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Tuple
+
+from core.integrations.mcp_config import get_vault_root, load_mcp_config, save_mcp_config
 
 PACKAGE = "@notionhq/notion-mcp-server"
 MCP_CONFIG_KEY = "notion"
 
-def get_claude_config_path() -> Path:
-    """Get Claude Desktop config path."""
-    return Path.home() / "Library" / "Application Support" / "Claude" / "claude_desktop_config.json"
-
-def load_claude_config() -> dict:
-    """Load existing Claude config."""
-    config_path = get_claude_config_path()
-    if config_path.exists():
-        with open(config_path) as f:
-            return json.load(f)
-    return {"mcpServers": {}}
-
-def save_claude_config(config: dict) -> None:
-    """Save Claude config."""
-    config_path = get_claude_config_path()
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(config_path, "w") as f:
-        json.dump(config, f, indent=2)
-
 def is_installed() -> bool:
     """Check if Notion MCP is already configured."""
-    config = load_claude_config()
+    config = load_mcp_config()
     return MCP_CONFIG_KEY in config.get("mcpServers", {})
 
 def get_setup_instructions() -> str:
@@ -78,7 +60,7 @@ def install(token: str) -> Tuple[bool, str]:
     if not token or not token.startswith(("ntn_", "secret_")):
         return False, "Invalid token. Notion tokens start with 'ntn_' or 'secret_'"
     
-    config = load_claude_config()
+    config = load_mcp_config()
     
     # Add Notion MCP configuration
     config.setdefault("mcpServers", {})[MCP_CONFIG_KEY] = {
@@ -89,10 +71,10 @@ def install(token: str) -> Tuple[bool, str]:
         }
     }
     
-    save_claude_config(config)
+    save_mcp_config(config)
     
     # Save to Dex integrations config
-    dex_config_path = Path(os.environ.get("DEX_VAULT", ".")) / "System" / "integrations" / "notion.yaml"
+    dex_config_path = get_vault_root() / "System" / "integrations" / "notion.yaml"
     dex_config_path.parent.mkdir(parents=True, exist_ok=True)
     
     with open(dex_config_path, "w") as f:
@@ -101,7 +83,7 @@ def install(token: str) -> Tuple[bool, str]:
 
 enabled: true
 package: {PACKAGE}
-# Token stored in Claude Desktop config for security
+# Token stored in Dex's repo-local MCP config
 
 # Pages shared with integration (update as you add more)
 shared_pages: []
@@ -118,7 +100,7 @@ hooks:
 
 **What's set up:**
 - MCP Server: `{PACKAGE}`
-- Token: Securely stored in Claude Desktop config
+- Token: Stored in Dex's repo-local `.mcp.json`
 
 **What you can do now:**
 - Ask me to search your Notion workspace
@@ -127,17 +109,17 @@ hooks:
 
 **Remember:** I can only access pages you've shared with the integration.
 
-**Restart Claude Desktop** to activate the integration.
+**Next step:** Reload Dex MCP servers in Codex or restart your Codex session so the new server is picked up.
 """
 
 def uninstall() -> Tuple[bool, str]:
     """Remove Notion MCP configuration."""
-    config = load_claude_config()
+    config = load_mcp_config()
     
     if MCP_CONFIG_KEY in config.get("mcpServers", {}):
         del config["mcpServers"][MCP_CONFIG_KEY]
-        save_claude_config(config)
-        return True, "Notion integration removed. Restart Claude Desktop to apply."
+        save_mcp_config(config)
+        return True, "Notion integration removed. Reload Dex MCP servers or restart Codex to apply."
     
     return False, "Notion integration was not configured."
 
@@ -145,5 +127,5 @@ def test_connection() -> Tuple[bool, str]:
     """Test if Notion connection is working."""
     # This would require actually running the MCP - for now, just check config
     if is_installed():
-        return True, "Notion MCP is configured. Restart Claude Desktop if you haven't already."
-    return False, "Notion MCP is not configured. Run /integrate-notion to set up."
+        return True, "Notion MCP is configured. Reload Dex MCP servers if the current Codex session does not see it yet."
+    return False, "Notion MCP is not configured. Ask Codex to set up the Notion integration."

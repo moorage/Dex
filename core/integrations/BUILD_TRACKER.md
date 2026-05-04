@@ -88,7 +88,7 @@ Existing User Flow (/dex-update):
 | Component | Location |
 |-----------|----------|
 | Integration modules | `core/integrations/{notion,slack,google}/` |
-| Skills | `.claude/skills/integrations/` |
+| Skills | `.agents/skills/integrations/` |
 | User config | `System/integrations/config.yaml` |
 | Detection helper | `core/integrations/detect.py` |
-| Onboarding step | `.claude/flows/onboarding.md` (new step) |
+| Onboarding step | `.agents/skills/onboarding/SKILL.md` |

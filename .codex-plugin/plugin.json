@@ -1,0 +1,41 @@
+{
+  "name": "dex-by-dave",
+  "version": "1.20.0",
+  "description": "Codex-first Dex distribution with repo skills, hooks, and onboarding for strategic work management.",
+  "author": {
+    "name": "Dave Killeen",
+    "url": "https://github.com/davekilleen"
+  },
+  "homepage": "https://github.com/davekilleen/dex",
+  "repository": "https://github.com/davekilleen/dex",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "keywords": [
+    "codex",
+    "productivity",
+    "pkm",
+    "meeting-intelligence",
+    "task-management",
+    "career-development"
+  ],
+  "skills": "./.agents/skills/",
+  "hooks": "./.codex/hooks.json",
+  "mcpServers": "./.mcp.plugin.json",
+  "interface": {
+    "displayName": "Dex by Dave",
+    "shortDescription": "Personal operating system for Codex.",
+    "longDescription": "Dex combines role-aware onboarding, meeting intelligence, relationship memory, task workflows, and repo-local MCP tooling for Codex.",
+    "developerName": "Dave Killeen",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Plan"
+    ],
+    "websiteURL": "https://github.com/davekilleen/dex",
+    "defaultPrompt": [
+      "Use $onboarding to set up Dex in this repo.",
+      "Use $getting-started to walk through the current Dex workspace."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

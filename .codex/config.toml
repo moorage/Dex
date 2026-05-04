@@ -1,0 +1,113 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+notify = ["bash", "-lc", "afplay /System/Library/Sounds/Ping.aiff >/dev/null 2>&1 || true"]
+
+[features]
+codex_hooks = true
+
+[mcp_servers.work-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "work_server.py"]
+cwd = "."
+
+[mcp_servers.work-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.calendar-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "calendar_server.py"]
+cwd = "."
+
+[mcp_servers.calendar-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.granola-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "granola_server.py"]
+cwd = "."
+
+[mcp_servers.granola-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.career-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "career_server.py"]
+cwd = "."
+
+[mcp_servers.career-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.dex-improvements-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "dex_improvements_server.py"]
+cwd = "."
+
+[mcp_servers.dex-improvements-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.resume-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "resume_server.py"]
+cwd = "."
+
+[mcp_servers.resume-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.update-checker]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "update_checker.py"]
+cwd = "."
+
+[mcp_servers.update-checker.env]
+VAULT_PATH = "."
+
+[mcp_servers.onboarding-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "onboarding_server.py"]
+cwd = "."
+
+[mcp_servers.onboarding-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.dex-analytics]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "analytics_server.py"]
+cwd = "."
+
+[mcp_servers.dex-analytics.env]
+VAULT_PATH = "."
+DEX_ANALYTICS_MODE = "proxy"
+DEX_ANALYTICS_ENDPOINT = ""
+DEX_ANALYTICS_PROXY_TOKEN = ""
+
+[mcp_servers.session-memory]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "session_memory_server.py"]
+cwd = "."
+
+[mcp_servers.session-memory.env]
+VAULT_PATH = "."
+
+[mcp_servers.beta-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "beta_server.py"]
+cwd = "."
+
+[mcp_servers.beta-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.commitment-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "commitment_server.py"]
+cwd = "."
+
+[mcp_servers.commitment-mcp.env]
+VAULT_PATH = "."
+
+[mcp_servers.demo-mode-mcp]
+command = "node"
+args = ["./core/scripts/run-dex-mcp.cjs", "demo_mode_server.py"]
+cwd = "."
+
+[mcp_servers.demo-mode-mcp.env]
+VAULT_PATH = "."

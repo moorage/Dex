@@ -4,10 +4,10 @@ Some skills take minutes, not seconds. Background processing lets you keep worki
 
 ## How It Works
 
-### Claude Code CLI
+### Codex CLI
 Background agents run in a separate process. The skill acknowledges immediately and processes in the background. You get a notification when done.
 
-### Cursor
+### Legacy GUI Harnesses
 Background execution works differently — skills provide progress updates during execution and break large batches into smaller chunks with intermediate output.
 
 ## Candidate Skills
@@ -35,6 +35,6 @@ All background-capable skills follow this pattern:
 ## Implementation Notes
 
 - Skills declare background capability in their prompt
-- The harness (Claude Code / Cursor) decides execution model
+- The harness decides execution model
 - Progress can be written to a status file for polling
 - Background skills should be idempotent — safe to re-run if interrupted
