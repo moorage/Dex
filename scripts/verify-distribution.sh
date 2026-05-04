@@ -332,6 +332,71 @@ else
     WARNINGS=$((WARNINGS + 1))
 fi
 
+# Check 16: Codex hook config points at real repo-local scripts
+echo ""
+echo "✓ Checking Codex hook targets..."
+if [ -n "$PYTHON_CMD" ] && [ -f ".codex/hooks.json" ]; then
+    if HOOK_VALIDATION_OUTPUT=$("$PYTHON_CMD" - <<'PY' 2>&1
+import json
+from pathlib import Path
+import re
+import sys
+
+repo_root = Path('.')
+hooks_config = json.loads((repo_root / '.codex' / 'hooks.json').read_text(encoding='utf-8')).get('hooks', {})
+errors = []
+pattern = re.compile(r'(node|bash) "\$\(git rev-parse --show-toplevel\)/\.codex/hooks/([^"]+)"')
+
+for event_name, matcher_blocks in hooks_config.items():
+    for matcher_block in matcher_blocks:
+        for hook in matcher_block.get('hooks', []):
+            if hook.get('type') != 'command':
+                errors.append(f"{event_name}: hook must stay command-based")
+                continue
+
+            command = hook.get('command', '')
+            match = pattern.fullmatch(command)
+            if match is None:
+                errors.append(f"{event_name}: hook command must target repo-local .codex/hooks via git root: {command}")
+                continue
+
+            runner, relative_target = match.groups()
+            target_path = Path(relative_target)
+            if target_path.is_absolute():
+                errors.append(f"{event_name}: hook target must stay relative: {relative_target}")
+                continue
+            if '..' in target_path.parts:
+                errors.append(f"{event_name}: hook target must not escape .codex/hooks: {relative_target}")
+                continue
+
+            full_path = repo_root / '.codex' / 'hooks' / target_path
+            if not full_path.is_file():
+                errors.append(f"{event_name}: hook references missing script {full_path}")
+                continue
+
+            if runner == 'node' and full_path.suffix != '.cjs':
+                errors.append(f"{event_name}: node hook must target a .cjs script: {full_path}")
+            if runner == 'bash' and full_path.suffix != '.sh':
+                errors.append(f"{event_name}: bash hook must target a .sh script: {full_path}")
+
+if errors:
+    print('\n'.join(errors))
+    sys.exit(1)
+PY
+    ); then
+        echo "  ✅ Codex hook targets resolve to repo-local scripts"
+    else
+        echo "  ❌ ERROR: Codex hook config drifted:"
+        echo "$HOOK_VALIDATION_OUTPUT" | sed 's/^/     /'
+        ERRORS=$((ERRORS + 1))
+    fi
+elif [ -z "$PYTHON_CMD" ]; then
+    echo "  ℹ️  INFO: Skipping hook validation because no supported Python runtime was found"
+else
+    echo "  ❌ ERROR: .codex/hooks.json not found"
+    ERRORS=$((ERRORS + 1))
+fi
+
 # Summary
 echo ""
 echo "================================="

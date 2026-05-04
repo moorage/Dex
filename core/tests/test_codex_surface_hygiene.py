@@ -1,4 +1,8 @@
+import json
+import re
 from pathlib import Path
+
+import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -93,8 +97,6 @@ def _active_surface_paths() -> list[Path]:
 
 
 def _load_mcp_template_servers() -> dict:
-    import json
-
     template_path = REPO_ROOT / ".mcp.json.example"
     template = json.loads(template_path.read_text(encoding="utf-8"))
     return template["mcpServers"]
@@ -123,6 +125,22 @@ def _normalize_template_mcp_env(env: dict[str, str]) -> dict[str, str]:
     if normalized.get("VAULT_PATH") == "{{VAULT_PATH}}":
         normalized["VAULT_PATH"] = "."
     return normalized
+
+
+def _load_codex_hooks_config() -> dict:
+    hooks_path = REPO_ROOT / ".codex" / "hooks.json"
+    return json.loads(hooks_path.read_text(encoding="utf-8"))
+
+
+def _extract_repo_local_hook_target(command: str) -> tuple[str, Path]:
+    match = re.fullmatch(r'(node|bash) "\$\(git rev-parse --show-toplevel\)/\.codex/hooks/([^"]+)"', command)
+    assert match is not None, f"Hook command must target repo-local .codex/hooks via git root: {command}"
+
+    runner, relative_target = match.groups()
+    target_path = Path(relative_target)
+    assert not target_path.is_absolute(), f"Hook target must stay relative: {relative_target}"
+    assert ".." not in target_path.parts, f"Hook target must not escape .codex/hooks: {relative_target}"
+    return runner, REPO_ROOT / ".codex" / "hooks" / target_path
 
 
 def test_first_party_codex_skill_inventory_matches_expected():
@@ -205,6 +223,21 @@ def test_mcp_template_and_repo_local_runtime_stay_in_lockstep():
         _assert_safe_mcp_server_filename(server_name, template_args[1])
 
 
+def test_codex_hooks_json_points_at_existing_repo_local_scripts():
+    hooks_config = _load_codex_hooks_config()
+
+    for event_name, matcher_blocks in hooks_config["hooks"].items():
+        for matcher_block in matcher_blocks:
+            for hook in matcher_block.get("hooks", []):
+                assert hook.get("type") == "command", f"{event_name} hook must stay command-based"
+                runner, target_path = _extract_repo_local_hook_target(hook["command"])
+                assert target_path.is_file(), f"{event_name} hook references missing script: {target_path}"
+                if runner == "node":
+                    assert target_path.suffix == ".cjs", f"{event_name} node hook must target a .cjs script: {target_path}"
+                if runner == "bash":
+                    assert target_path.suffix == ".sh", f"{event_name} bash hook must target a .sh script: {target_path}"
+
+
 def test_execplan_convention_doc_exists():
     assert (REPO_ROOT / "docs" / "PLANS.md").is_file()
 
@@ -236,9 +269,19 @@ def test_all_codex_skill_files_have_valid_top_level_frontmatter():
             offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> missing closing frontmatter delimiter")
             continue
 
-        if f'name: "{skill_path.parent.name}"' not in frontmatter and f"name: {skill_path.parent.name}" not in frontmatter:
+        try:
+            parsed_frontmatter = yaml.safe_load(frontmatter)
+        except yaml.YAMLError as error:
+            offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> invalid YAML frontmatter: {error}")
+            continue
+
+        if not isinstance(parsed_frontmatter, dict):
+            offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> frontmatter must parse to a mapping")
+            continue
+
+        if parsed_frontmatter.get("name") != skill_path.parent.name:
             offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> frontmatter name does not match folder")
-        if "description:" not in frontmatter:
+        if not parsed_frontmatter.get("description"):
             offenders.append(f"{skill_path.relative_to(REPO_ROOT)} -> missing frontmatter description")
 
     assert not offenders, "Invalid Codex skill frontmatter:\n" + "\n".join(offenders)
