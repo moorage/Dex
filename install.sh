@@ -72,10 +72,22 @@ fi
 
 echo ""
 echo "Installing JavaScript dependencies..."
-if command -v pnpm >/dev/null 2>&1; then
+if [ -f "package-lock.json" ]; then
+    if ! command -v npm >/dev/null 2>&1; then
+        echo "npm is required for this repo because package-lock.json is checked in."
+        exit 1
+    fi
+    npm install
+elif [ -f "pnpm-lock.yaml" ]; then
+    if ! command -v pnpm >/dev/null 2>&1; then
+        echo "pnpm is required for this repo because pnpm-lock.yaml is checked in."
+        exit 1
+    fi
     pnpm install
 elif command -v npm >/dev/null 2>&1; then
     npm install
+elif command -v pnpm >/dev/null 2>&1; then
+    pnpm install
 else
     echo "npm or pnpm is required."
     exit 1
