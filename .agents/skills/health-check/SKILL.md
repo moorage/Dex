@@ -156,7 +156,7 @@ For each issue, analyze the technical `message`/`error` field (not shown to user
 |---|---|---|
 | `ECONNREFUSED` | [Server] isn't responding | "The server process may have stopped. Restarting your editor usually fixes this." |
 | `TimeoutError` or `timed out` | [Server] took too long to respond | "This could be a one-off. If it keeps happening, restart your editor." |
-| `ANTHROPIC_API_KEY not set` | API key is missing | "Run `$ai-setup` to configure your API key." |
+| `No Dex LLM auth configured` or `ANTHROPIC_API_KEY not set` | AI auth is missing | "Run `codex login` for ChatGPT auth, or run `$ai-setup` to configure an API key." |
 
 **Catch-all:**
 

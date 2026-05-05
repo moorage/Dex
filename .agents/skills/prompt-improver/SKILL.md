@@ -5,7 +5,7 @@ description: Transform vague prompts into rich, structured prompts with OpenAI G
 
 ## Purpose
 
-Transform vague, ambiguous prompts into rich, well-structured prompts. Uses an OpenAI `GPT-5.5` prompt improver when available, with graceful fallback to the current LLM.
+Transform vague, ambiguous prompts into rich, well-structured prompts. Uses an OpenAI `GPT-5.5` prompt improver through either ChatGPT-authenticated Codex CLI or direct OpenAI API auth, with graceful fallback to the current LLM.
 
 **How it works:**
 1. User provides a vague prompt (e.g., "critique this doc")
@@ -52,19 +52,18 @@ Check if $PROMPT starts with a flag (`-p`, `-v`) and extract:
 **Check in this order:**
 
 1. **Script available?** Check if `.scripts/improve-prompt.cjs` exists
-   - If yes and `OPENAI_API_KEY` is set → Use script (calls OpenAI Responses API directly)
-   - If yes but no key → Fall back to current LLM
+   - If yes → Use it
+   - The script auto-detects:
+     - ChatGPT-authenticated Codex CLI via `codex login`
+     - or `OPENAI_API_KEY`
+   - If neither is available → Fall back to the current LLM
 
-2. **API key available?** If the script is missing, check if `OPENAI_API_KEY` is set in environment
-   - If yes → Use OpenAI Responses API inline
-   - If no → Fall back to current LLM
+2. **No script?** Fall back to the current LLM
 
 **The fallback cascade:**
 ```
 Script (.scripts/improve-prompt.cjs)
-    ↓ (if not available)
-OpenAI Responses API (direct call)
-    ↓ (if no OPENAI_API_KEY)
+    ↓ (if no Codex ChatGPT auth and no OPENAI_API_KEY)
 Current LLM (GPT-5.5, GPT-5, etc.)
 ```
 
@@ -75,17 +74,9 @@ Current LLM (GPT-5.5, GPT-5, etc.)
 node .scripts/improve-prompt.cjs "$PROMPT" "$FEEDBACK" "$TARGET_MODEL" "$SYSTEM"
 ```
 
-**Method B: OpenAI Responses API (direct)**
-Make API call with:
-- **Model**: `gpt-5.5`
-- **Reasoning effort**: `medium`
-- **System Prompt**: Prompt engineering expert persona tuned for OpenAI best practices (see below)
-- **User Message**: The original vague prompt
-- **Store**: `false`
-
-**Method C: Current LLM Fallback**
+**Method B: Current LLM Fallback**
 Use the current session's LLM to improve the prompt inline:
-- Notify user: `"💡 Using inline improvement (no API key configured). For best results, add OPENAI_API_KEY to .env"`
+- Notify user: `"💡 Using inline improvement. For best results, run codex login or add OPENAI_API_KEY to .env"`
 - Apply the same prompt engineering system prompt
 - Continue with the improved result
 
@@ -191,8 +182,8 @@ The improved prompt typically follows this structure:
 
 | Situation | Behavior |
 |-----------|----------|
-| Script not found | Fall back to API |
-| No API key | Fall back to current LLM with notification |
+| Script not found | Fall back to current LLM |
+| No Codex ChatGPT auth or API key | Fall back to current LLM with notification |
 | API rate limit | Retry with exponential backoff, then fall back |
 | API error | Fall back to current LLM |
 | Network issues | Fall back to current LLM |
@@ -203,12 +194,12 @@ The improved prompt typically follows this structure:
 
 ## Setup (Optional)
 
-For best results, add your OpenAI API key:
+For best results, authenticate one of these ways:
 
-1. Create `.env` file in vault root (if not exists)
-2. Add: `OPENAI_API_KEY=your-key-here`
+1. Preferred for local Dex use: run `codex login`
+2. Optional direct API fallback: create `.env` in the vault root and add `OPENAI_API_KEY=your-key-here`
 
-Without the API key, the skill still works using the current LLM session.
+Without either, the skill still works using the current LLM session.
 
 ---
 

@@ -37,6 +37,19 @@ test('buildRequestBody targets GPT-5.5 and includes target-model context', () =>
   assert.match(body.input[1].content[0].text, /Existing system prompt to incorporate:/);
 });
 
+test('buildCodexTaskInput combines the prompt-engineering system prompt with the user request', () => {
+  const input = improver.buildCodexTaskInput({
+    originalPrompt: 'critique this memo',
+    feedback: 'Focus on risks',
+    targetModel: 'gpt-5.5',
+    systemPrompt: 'Be blunt.',
+  });
+
+  assert.match(input, /You are an expert prompt engineer/u);
+  assert.match(input, /Original prompt:/u);
+  assert.match(input, /critique this memo/u);
+});
+
 test('extractResponseText falls back to message output content', () => {
   const text = improver.extractResponseText({
     output: [
@@ -81,6 +94,7 @@ test('main loads OPENAI_API_KEY from .env and writes the improved prompt', async
             }),
           };
         },
+        authStatus: { available: false, hasFileBackedAuth: false },
       },
     );
 
@@ -97,7 +111,66 @@ test('main loads OPENAI_API_KEY from .env and writes the improved prompt', async
   }
 });
 
-test('main fails fast when OPENAI_API_KEY is missing', async () => {
+test('main falls back to Codex ChatGPT auth when OPENAI_API_KEY is missing', async () => {
+  const written = [];
+  const codexClient = require('../../../.scripts/lib/codex-chatgpt-client.cjs');
+  const originalRunStringTask = codexClient.runStringTask;
+
+  codexClient.runStringTask = () => 'Improved from Codex auth';
+
+  try {
+    const improved = await improver.main(['critique this'], {
+      cwd: os.tmpdir(),
+      env: {},
+      stdout: { write: (chunk) => written.push(chunk) },
+      fetchImpl: async () => {
+        throw new Error('fetch should not run');
+      },
+      authStatus: { available: true, hasFileBackedAuth: false },
+    });
+
+    assert.equal(improved, 'Improved from Codex auth');
+    assert.equal(written.join(''), 'Improved from Codex auth\n');
+  } finally {
+    codexClient.runStringTask = originalRunStringTask;
+  }
+});
+
+test('callCodexChatGPT uses the Codex adapter output', async () => {
+  const originalRunStringTask = require('../../../.scripts/lib/codex-chatgpt-client.cjs').runStringTask;
+  const codexClient = require('../../../.scripts/lib/codex-chatgpt-client.cjs');
+
+  codexClient.runStringTask = (options) => {
+    assert.match(options.stdinText, /Original prompt:/u);
+    return 'Improved from Codex';
+  };
+
+  try {
+    const result = await improver.callCodexChatGPT({
+      originalPrompt: 'critique this memo',
+      env: {},
+    });
+    assert.equal(result, 'Improved from Codex');
+  } finally {
+    codexClient.runStringTask = originalRunStringTask;
+  }
+});
+
+test('main fails fast when api-key mode is forced without OPENAI_API_KEY', async () => {
+  await assert.rejects(
+    improver.main(['critique this'], {
+      cwd: os.tmpdir(),
+      env: { DEX_LLM_AUTH_MODE: 'api-key' },
+      stdout: { write: () => {} },
+      fetchImpl: async () => {
+        throw new Error('fetch should not run');
+      },
+    }),
+    /OPENAI_API_KEY is required.*DEX_LLM_AUTH_MODE=api-key/u,
+  );
+});
+
+test('main fails when neither Codex ChatGPT auth nor OPENAI_API_KEY is available', async () => {
   await assert.rejects(
     improver.main(['critique this'], {
       cwd: os.tmpdir(),
@@ -106,7 +179,8 @@ test('main fails fast when OPENAI_API_KEY is missing', async () => {
       fetchImpl: async () => {
         throw new Error('fetch should not run');
       },
+      authStatus: { available: false, hasFileBackedAuth: false },
     }),
-    /OPENAI_API_KEY is required/u,
+    /requires ChatGPT-authenticated Codex CLI or OPENAI_API_KEY/u,
   );
 });

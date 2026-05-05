@@ -45,6 +45,16 @@ cd dex
 
 ### 3. Start Codex in the repo
 
+Authenticate once with ChatGPT if you want Dex to reuse your Codex CLI subscription for local LLM-backed scripts:
+
+```bash
+codex login
+```
+
+Dex's local scripts now auto-detect ChatGPT-authenticated Codex CLI usage. Direct API keys are optional and are mainly useful when you want unattended background automation to run on provider billing instead.
+
+Then start Codex:
+
 ```bash
 codex
 ```
@@ -99,6 +109,21 @@ Core Dex MCP servers are launched through `core/scripts/run-dex-mcp.cjs`, which 
 Dex includes setup helpers for repo-local MCP integrations such as Google, Slack, and Notion.
 
 These integrations now write to Dex's local `.mcp.json`, not a host-specific desktop config.
+
+## LLM Auth Modes
+
+Dex supports two LLM auth paths for repo scripts:
+
+- `codex login` with ChatGPT auth for local use that should stay on Codex/ChatGPT billing
+- Direct provider API keys in `.env` when you explicitly want API-key billing or unattended automation
+
+For trusted local background automation with ChatGPT auth, use file-backed Codex credentials:
+
+```toml
+cli_auth_credentials_store = "file"
+```
+
+Add that to `~/.codex/config.toml`, then run `codex login` again so Dex's `launchd` jobs can reuse `~/.codex/auth.json`.
 
 ## Distribution
 

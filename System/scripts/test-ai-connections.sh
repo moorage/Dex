@@ -37,7 +37,7 @@ if [[ -f "$MODELS_JSON" ]] && grep -q "openrouter" "$MODELS_JSON"; then
     fi
 else
     echo "   Status: Not configured"
-    echo "   Set up with: $ai-setup"
+    echo '   Set up with: $ai-setup'
 fi
 
 echo ""
@@ -75,13 +75,30 @@ echo ""
 # Test OpenAI / Codex premium
 echo "🌟 GPT-5.5 (Premium):"
 
-# Check for OpenAI API key
-if [[ -n "$OPENAI_API_KEY" ]]; then
+# Check Codex ChatGPT auth first
+if command -v codex &> /dev/null; then
+    CODEX_STATUS=$(codex login status 2>&1 || true)
+    if [[ "$CODEX_STATUS" == *"Logged in using ChatGPT"* ]]; then
+        echo "   Codex Auth: ✅ ChatGPT session active"
+        if [[ -f "$HOME/.codex/auth.json" ]]; then
+            echo "   Background Mode: ✅ File-backed auth.json present"
+        else
+            echo "   Background Mode: ⚠️ Logged in, but launchd support is best with ~/.codex/auth.json"
+        fi
+    elif [[ -n "$OPENAI_API_KEY" ]]; then
+        echo "   API Key: ✅ Set (env var)"
+        echo "   Codex Auth: ⚠️ ChatGPT session not active"
+    elif [[ -n "$CODEX_STATUS" ]]; then
+        echo "   Codex Auth: ⚠️ $CODEX_STATUS"
+    else
+        echo "   Codex Auth: ⚠️ Not logged in"
+        echo "   Run: codex login"
+    fi
+elif [[ -n "$OPENAI_API_KEY" ]]; then
     echo "   API Key: ✅ Set (env var)"
-elif [[ -f "$HOME/.pi/agent/auth.json" ]]; then
-    echo "   API Key: ✅ Codex/Pi auth present"
 else
-    echo "   API Key: ⚠️ No OPENAI_API_KEY found; may still be using Codex/Pi subscription"
+    echo "   Codex Auth: ❌ codex CLI not installed"
+    echo "   API Key: ⚠️ No OPENAI_API_KEY found"
 fi
 
 # Quick connectivity test
@@ -97,6 +114,7 @@ echo "=== Summary ==="
 # Build summary
 BUDGET_OK=false
 OFFLINE_OK=false
+PREMIUM_OK=false
 
 if [[ -f "$MODELS_JSON" ]] && grep -q "openrouter" "$MODELS_JSON"; then
     BUDGET_OK=true
@@ -108,7 +126,17 @@ if command -v ollama &> /dev/null && curl -s http://localhost:11434/api/tags > /
     fi
 fi
 
-echo "Premium (GPT-5.5): ✅ Available"
+if command -v codex &> /dev/null && codex login status 2>&1 | grep -q "Logged in using ChatGPT"; then
+    PREMIUM_OK=true
+elif [[ -n "$OPENAI_API_KEY" ]]; then
+    PREMIUM_OK=true
+fi
+
+if $PREMIUM_OK; then
+    echo "Premium (GPT-5.5): ✅ Available"
+else
+    echo "Premium (GPT-5.5): ❌ Not configured"
+fi
 if $BUDGET_OK; then
     echo "Budget Cloud:      ✅ Configured"
 else
@@ -121,4 +149,4 @@ else
 fi
 
 echo ""
-echo "Configure with: $ai-setup"
+echo 'Configure with: $ai-setup'

@@ -144,21 +144,35 @@ If cache found, ask:
 
 **If Automatic (option 2):**
 
-Ask which API provider they want to use:
+Ask how they want background AI analysis to authenticate:
 
-> "Automatic processing needs an API key to run in the background. Which provider do you prefer?
+> "Automatic processing can use either your ChatGPT-authenticated Codex CLI session or a direct API key.
 >
-> | Provider | Cost | Notes |
-> |----------|------|-------|
-> | **Gemini** | Free tier (1500 req/day) | Best for most users |
-> | **Anthropic** | ~$0.01/meeting | Highest quality |
-> | **OpenAI** | ~$0.01/meeting | Fast, reliable |
+> | Option | Cost | Notes |
+> |--------|------|-------|
+> | **Codex ChatGPT auth** | Uses your Codex/ChatGPT subscription | Best if you already use `codex login` locally |
+> | **Gemini API key** | Free tier (1500 req/day) | Best direct-provider fallback |
+> | **Anthropic API key** | ~$0.01/meeting | Highest quality direct-provider fallback |
+> | **OpenAI API key** | ~$0.01/meeting | Fast, reliable direct-provider fallback |
 >
-> Type 1 for Gemini, 2 for Anthropic, or 3 for OpenAI:"
+> Type 1 for Codex ChatGPT auth, 2 for Gemini, 3 for Anthropic, or 4 for OpenAI:"
 
 Based on choice:
 
-**For all providers:**
+**If Codex ChatGPT auth (option 1):**
+
+1. Ensure the user is signed in:
+   - Run `codex login` if needed
+2. Explain the background requirement:
+   - For trusted local `launchd` jobs, file-backed auth is best
+   - Add `cli_auth_credentials_store = "file"` to `~/.codex/config.toml`
+   - Then run `codex login` again
+3. If `.env` exists, optionally add `DEX_LLM_AUTH_MODE=codex-chatgpt`
+4. Run `.scripts/meeting-intel/install-automation.sh`
+
+Say: "Automatic processing enabled with Codex ChatGPT auth. Meetings will sync every 30 minutes, and Dex will use your local Codex login for AI analysis."
+
+**For direct-provider options:**
 
 1. Provide the appropriate link:
    - **Gemini:** https://aistudio.google.com/apikey
@@ -171,13 +185,14 @@ Based on choice:
    - If `.env` doesn't exist, create it from `env.example`
    - Add a comment: `# API key for automatic meeting processing`
    - Add their key: `GEMINI_API_KEY=their-key` (or `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`)
+   - Optionally add `DEX_LLM_AUTH_MODE=api-key`
 
 4. Explain simply:
    > "I've saved your API key to a file called `.env` (a secure place for credentials). The background meeting sync will use this to process your meetings automatically."
 
 5. Run `npm install` to install dependencies
-5. Update `System/user-profile.yaml` with `meeting_processing: automatic` and `meeting_api_provider: [choice]`
-6. Run `.scripts/meeting-intel/install-automation.sh`
+6. Update `System/user-profile.yaml` with `meeting_processing: automatic` and `meeting_api_provider: [choice]`
+7. Run `.scripts/meeting-intel/install-automation.sh`
 
 Say: "Automatic processing enabled! Meetings will sync every 30 minutes. You can also run `$process-meetings` anytime."
 

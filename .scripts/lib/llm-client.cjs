@@ -2,11 +2,13 @@
 
 /**
  * Unified LLM Client
- * 
- * Supports OpenAI, Anthropic, and Google Gemini with automatic provider selection
- * based on available API keys.
- * 
- * Priority order: OpenAI > Anthropic > Gemini
+ *
+ * Supports direct provider API keys plus local Codex CLI ChatGPT auth.
+ *
+ * Auto mode resolution:
+ *   1. Prefer file-backed Codex ChatGPT auth when available
+ *   2. Otherwise fall back to direct provider API keys
+ *   3. Otherwise use local ChatGPT-authenticated Codex if available
  */
 
 try {
@@ -18,6 +20,14 @@ try {
 const DEFAULT_OPENAI_MODEL = 'gpt-5.5';
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-6';
 const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash-thinking-exp-1219';
+const DEX_LLM_AUTH_MODE_ENV = 'DEX_LLM_AUTH_MODE';
+const AUTH_MODE_AUTO = 'auto';
+const AUTH_MODE_API_KEY = 'api-key';
+const AUTH_MODE_CODEX_CHATGPT = 'codex-chatgpt';
+
+function getCodexClient(options = {}) {
+  return options.codexClient || require('./codex-chatgpt-client.cjs');
+}
 
 function getConfiguredApiKeys(env = process.env) {
   return {
@@ -27,13 +37,96 @@ function getConfiguredApiKeys(env = process.env) {
   };
 }
 
-// Determine which provider to use
+// Determine which direct provider to use
 function getAvailableProvider(env = process.env) {
   const keys = getConfiguredApiKeys(env);
   if (keys.openai) return 'openai';
   if (keys.anthropic) return 'anthropic';
   if (keys.gemini) return 'gemini';
   return null;
+}
+
+function normalizeAuthMode(value) {
+  if (typeof value !== 'string' || !value.trim()) {
+    return AUTH_MODE_AUTO;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (
+    normalized !== AUTH_MODE_AUTO &&
+    normalized !== AUTH_MODE_API_KEY &&
+    normalized !== AUTH_MODE_CODEX_CHATGPT
+  ) {
+    throw new Error(
+      `Unsupported ${DEX_LLM_AUTH_MODE_ENV} value "${value}". Use "auto", "api-key", or "codex-chatgpt".`
+    );
+  }
+
+  return normalized;
+}
+
+function getConfiguredAuthMode(env = process.env) {
+  return normalizeAuthMode(env[DEX_LLM_AUTH_MODE_ENV]);
+}
+
+function buildMissingAuthError(authMode = AUTH_MODE_AUTO, codexMessage = '') {
+  if (authMode === AUTH_MODE_API_KEY) {
+    return new Error(
+      `Direct API auth is required because ${DEX_LLM_AUTH_MODE_ENV}=api-key, but no provider API key is configured. Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY.`
+    );
+  }
+
+  if (authMode === AUTH_MODE_CODEX_CHATGPT) {
+    return new Error(
+      codexMessage ||
+        `Codex ChatGPT auth is required because ${DEX_LLM_AUTH_MODE_ENV}=codex-chatgpt. Run \`codex login\` and sign in with ChatGPT.`
+    );
+  }
+
+  return new Error(
+    `No Dex LLM auth configured. Either sign in with ChatGPT using \`codex login\`, or set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY.`
+  );
+}
+
+function resolveAuthTarget(options = {}) {
+  const env = options.env || process.env;
+  const authMode = getConfiguredAuthMode(env);
+  const provider = getAvailableProvider(env);
+  const codexClient = getCodexClient(options);
+  const codexStatus = codexClient.getChatGPTAuthStatus({
+    env,
+    authStatus: options.codexAuthStatus,
+    execFileSyncImpl: options.execFileSyncImpl,
+    useCache: options.useCache,
+  });
+
+  if (authMode === AUTH_MODE_API_KEY) {
+    if (!provider) {
+      throw buildMissingAuthError(authMode, codexStatus.message);
+    }
+    return { type: 'provider', provider, authMode, codexStatus };
+  }
+
+  if (authMode === AUTH_MODE_CODEX_CHATGPT) {
+    if (!codexStatus.available) {
+      throw buildMissingAuthError(authMode, codexStatus.message);
+    }
+    return { type: AUTH_MODE_CODEX_CHATGPT, provider: AUTH_MODE_CODEX_CHATGPT, authMode, codexStatus };
+  }
+
+  if (codexStatus.available && codexStatus.hasFileBackedAuth) {
+    return { type: AUTH_MODE_CODEX_CHATGPT, provider: AUTH_MODE_CODEX_CHATGPT, authMode, codexStatus };
+  }
+
+  if (provider) {
+    return { type: 'provider', provider, authMode, codexStatus };
+  }
+
+  if (codexStatus.available) {
+    return { type: AUTH_MODE_CODEX_CHATGPT, provider: AUTH_MODE_CODEX_CHATGPT, authMode, codexStatus };
+  }
+
+  throw buildMissingAuthError(authMode, codexStatus.message);
 }
 
 // ============================================================================
@@ -124,6 +217,24 @@ async function generateWithOpenAI(prompt, options = {}) {
   return extractOpenAIResponseText(response);
 }
 
+async function generateWithCodex(prompt, options = {}) {
+  const codexClient = getCodexClient(options);
+
+  return codexClient.runStringTask({
+    taskInstruction: [
+      'You are a local Dex text-generation helper.',
+      'Complete the task described in the <stdin> block.',
+      'Return only the requested answer text.',
+    ].join('\n\n'),
+    stdinText: prompt,
+    model: options.model || DEFAULT_OPENAI_MODEL,
+    env: options.env,
+    authStatus: options.codexAuthStatus,
+    execFileSyncImpl: options.execFileSyncImpl,
+    useCache: options.useCache,
+  });
+}
+
 // ============================================================================
 // GEMINI CLIENT
 // ============================================================================
@@ -162,48 +273,68 @@ async function generateWithGemini(prompt, options = {}) {
  * @returns {Promise<string>} Generated text
  */
 async function generateContent(prompt, options = {}) {
-  const provider = options.provider || getAvailableProvider(options.env);
-  
-  if (!provider) {
-    throw new Error(
-      'No LLM API key found. Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY in your .env file'
-    );
+  const requestedProvider = options.provider;
+  let target;
+
+  if (requestedProvider) {
+    if (requestedProvider === AUTH_MODE_CODEX_CHATGPT) {
+      target = { type: AUTH_MODE_CODEX_CHATGPT, provider: AUTH_MODE_CODEX_CHATGPT };
+    } else {
+      target = { type: 'provider', provider: requestedProvider };
+    }
+  } else {
+    target = resolveAuthTarget(options);
   }
-  
-  switch (provider) {
+
+  switch (target.provider) {
     case 'anthropic':
       return await generateWithAnthropic(prompt, options);
     case 'openai':
       return await generateWithOpenAI(prompt, options);
     case 'gemini':
       return await generateWithGemini(prompt, options);
+    case AUTH_MODE_CODEX_CHATGPT:
+      return await generateWithCodex(prompt, options);
     default:
-      throw new Error(`Unknown provider: ${provider}`);
+      throw new Error(`Unknown provider: ${target.provider}`);
   }
 }
 
 /**
  * Get the currently active provider
  */
-function getActiveProvider() {
-  return getAvailableProvider();
+function getActiveProvider(options = {}) {
+  try {
+    return resolveAuthTarget(options).provider;
+  } catch {
+    return null;
+  }
 }
 
 /**
  * Check if any API key is configured
  */
-function isConfigured() {
-  return getAvailableProvider() !== null;
+function isConfigured(options = {}) {
+  return getActiveProvider(options) !== null;
 }
 
 module.exports = {
+  AUTH_MODE_AUTO,
+  AUTH_MODE_API_KEY,
+  AUTH_MODE_CODEX_CHATGPT,
+  DEFAULT_CODEX_MODEL: DEFAULT_OPENAI_MODEL,
   DEFAULT_OPENAI_MODEL,
   DEFAULT_ANTHROPIC_MODEL,
   DEFAULT_GEMINI_MODEL,
+  DEX_LLM_AUTH_MODE_ENV,
+  getConfiguredAuthMode,
   getConfiguredApiKeys,
   getAvailableProvider,
+  normalizeAuthMode,
+  resolveAuthTarget,
   extractOpenAIResponseText,
   generateContent,
+  generateWithCodex,
   generateWithOpenAI,
   getActiveProvider,
   isConfigured,

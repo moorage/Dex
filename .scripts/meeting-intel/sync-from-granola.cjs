@@ -737,7 +737,9 @@ async function analyzeWithLLM(meeting, profile, pillars) {
   const { generateContent, isConfigured, getActiveProvider } = require('../lib/llm-client.cjs');
 
   if (!isConfigured()) {
-    throw new Error('No LLM API key found. Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY in .env');
+    throw new Error(
+      'No Dex LLM auth configured. Run `codex login` for ChatGPT auth, or set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY.'
+    );
   }
 
   const prompt = buildAnalysisPrompt(meeting, profile, pillars);
@@ -1165,9 +1167,13 @@ async function main() {
       log('  Creating meeting note with AI analysis...');
       result = createMeetingNote(meeting, analysis, profile, pillars);
     } catch (err) {
-      if (err.message.includes('No LLM API key') || err.message.includes('not configured')) {
+      if (
+        err.message.includes('No Dex LLM auth configured') ||
+        err.message.includes('No LLM API key') ||
+        err.message.includes('not configured')
+      ) {
         // No LLM configured — create a basic structured note instead
-        log(`  No LLM available — creating basic note (run /ai-setup to enable AI analysis)`);
+        log('  No AI auth available — creating basic note (run `codex login` or `/ai-setup` to enable AI analysis)');
         result = createBasicMeetingNote(meeting, profile);
       } else {
         log(`  Failed: ${err.message}`);
