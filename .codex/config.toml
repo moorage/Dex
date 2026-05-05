@@ -1,5 +1,12 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
+# Dex LLM auth policy:
+# - Local Dex scripts can reuse `codex login` ChatGPT auth.
+# - For trusted local `launchd` automation, prefer user-level `cli_auth_credentials_store = "file"`
+#   in `~/.codex/config.toml` so background jobs can reuse `~/.codex/auth.json`.
+# - This repo does not force `forced_login_method` because that would unexpectedly override
+#   user-wide Codex auth behavior.
+
 notify = ["bash", "-lc", "afplay /System/Library/Sounds/Ping.aiff >/dev/null 2>&1 || true"]
 
 [features]

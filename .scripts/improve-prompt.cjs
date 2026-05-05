@@ -2,9 +2,14 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const codexClient = require('./lib/codex-chatgpt-client.cjs');
 
 const DEFAULT_IMPROVER_MODEL = 'gpt-5.5';
 const OPENAI_RESPONSES_URL = 'https://api.openai.com/v1/responses';
+const DEX_LLM_AUTH_MODE_ENV = 'DEX_LLM_AUTH_MODE';
+const AUTH_MODE_AUTO = 'auto';
+const AUTH_MODE_API_KEY = 'api-key';
+const AUTH_MODE_CODEX_CHATGPT = 'codex-chatgpt';
 
 function parseEnvFile(content) {
   const parsed = {};
@@ -131,6 +136,25 @@ function buildRequestBody({ originalPrompt, feedback = '', targetModel = '', sys
   };
 }
 
+function normalizeAuthMode(value) {
+  if (typeof value !== 'string' || !value.trim()) {
+    return AUTH_MODE_AUTO;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (
+    normalized !== AUTH_MODE_AUTO &&
+    normalized !== AUTH_MODE_API_KEY &&
+    normalized !== AUTH_MODE_CODEX_CHATGPT
+  ) {
+    throw new Error(
+      `Unsupported ${DEX_LLM_AUTH_MODE_ENV} value "${value}". Use "auto", "api-key", or "codex-chatgpt".`
+    );
+  }
+
+  return normalized;
+}
+
 function extractResponseText(response) {
   if (typeof response?.output_text === 'string' && response.output_text.trim()) {
     return response.output_text.trim();
@@ -181,6 +205,37 @@ async function callOpenAI({ apiKey, requestBody, fetchImpl = globalThis.fetch })
   return data;
 }
 
+function buildCodexTaskInput({ originalPrompt, feedback = '', targetModel = '', systemPrompt = '' }) {
+  return [
+    buildSystemPrompt({ feedback, targetModel, systemPrompt }),
+    '',
+    buildUserMessage({ originalPrompt, targetModel, systemPrompt }),
+  ].join('\n');
+}
+
+async function callCodexChatGPT({
+  originalPrompt,
+  feedback = '',
+  targetModel = '',
+  systemPrompt = '',
+  env,
+  execFileSyncImpl,
+  authStatus,
+}) {
+  return codexClient.runStringTask({
+    taskInstruction: [
+      'You are an expert prompt engineer following OpenAI prompt engineering best practices.',
+      'Use the task payload in <stdin> to rewrite the prompt.',
+      'Return only the improved prompt text.',
+    ].join('\n\n'),
+    stdinText: buildCodexTaskInput({ originalPrompt, feedback, targetModel, systemPrompt }),
+    model: targetModel.trim() || DEFAULT_IMPROVER_MODEL,
+    env,
+    execFileSyncImpl,
+    authStatus,
+  });
+}
+
 async function main(argv = process.argv.slice(2), options = {}) {
   const [originalPrompt = '', feedback = '', targetModel = '', systemPrompt = ''] = argv;
   if (!originalPrompt.trim()) {
@@ -190,20 +245,74 @@ async function main(argv = process.argv.slice(2), options = {}) {
   const cwd = options.cwd || process.cwd();
   const env = options.env || process.env;
   loadDotEnvFile(path.join(cwd, '.env'), env);
-
-  const apiKey = env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required for .scripts/improve-prompt.cjs');
-  }
-
-  const requestBody = buildRequestBody({ originalPrompt, feedback, targetModel, systemPrompt });
-  const response = await callOpenAI({
-    apiKey,
-    requestBody,
-    fetchImpl: options.fetchImpl,
+  const authMode = normalizeAuthMode(env[DEX_LLM_AUTH_MODE_ENV]);
+  const authStatus = codexClient.getChatGPTAuthStatus({
+    env,
+    authStatus: options.authStatus,
+    execFileSyncImpl: options.execFileSyncImpl,
+    useCache: options.useCache,
   });
 
-  const improvedPrompt = extractResponseText(response);
+  const apiKey = env.OPENAI_API_KEY;
+  let improvedPrompt = '';
+
+  if (authMode === AUTH_MODE_CODEX_CHATGPT) {
+    improvedPrompt = await callCodexChatGPT({
+      originalPrompt,
+      feedback,
+      targetModel,
+      systemPrompt,
+      env,
+      execFileSyncImpl: options.execFileSyncImpl,
+      authStatus,
+    });
+  } else if (authMode === AUTH_MODE_API_KEY) {
+    if (!apiKey) {
+      throw new Error(
+        `OPENAI_API_KEY is required for .scripts/improve-prompt.cjs when ${DEX_LLM_AUTH_MODE_ENV}=api-key`
+      );
+    }
+    const requestBody = buildRequestBody({ originalPrompt, feedback, targetModel, systemPrompt });
+    const response = await callOpenAI({
+      apiKey,
+      requestBody,
+      fetchImpl: options.fetchImpl,
+    });
+    improvedPrompt = extractResponseText(response);
+  } else if (authStatus.available && authStatus.hasFileBackedAuth) {
+    improvedPrompt = await callCodexChatGPT({
+      originalPrompt,
+      feedback,
+      targetModel,
+      systemPrompt,
+      env,
+      execFileSyncImpl: options.execFileSyncImpl,
+      authStatus,
+    });
+  } else if (apiKey) {
+    const requestBody = buildRequestBody({ originalPrompt, feedback, targetModel, systemPrompt });
+    const response = await callOpenAI({
+      apiKey,
+      requestBody,
+      fetchImpl: options.fetchImpl,
+    });
+    improvedPrompt = extractResponseText(response);
+  } else if (authStatus.available) {
+    improvedPrompt = await callCodexChatGPT({
+      originalPrompt,
+      feedback,
+      targetModel,
+      systemPrompt,
+      env,
+      execFileSyncImpl: options.execFileSyncImpl,
+      authStatus,
+    });
+  } else {
+    throw new Error(
+      'Prompt improver requires ChatGPT-authenticated Codex CLI or OPENAI_API_KEY. Run `codex login` or set OPENAI_API_KEY.'
+    );
+  }
+
   const stdout = options.stdout || process.stdout;
   stdout.write(`${improvedPrompt}\n`);
   return improvedPrompt;
@@ -219,12 +328,19 @@ if (require.main === module) {
 module.exports = {
   DEFAULT_IMPROVER_MODEL,
   OPENAI_RESPONSES_URL,
+  AUTH_MODE_AUTO,
+  AUTH_MODE_API_KEY,
+  AUTH_MODE_CODEX_CHATGPT,
+  DEX_LLM_AUTH_MODE_ENV,
   parseEnvFile,
   loadDotEnvFile,
   buildSystemPrompt,
   buildUserMessage,
   buildRequestBody,
+  buildCodexTaskInput,
+  normalizeAuthMode,
   extractResponseText,
   callOpenAI,
+  callCodexChatGPT,
   main,
 };

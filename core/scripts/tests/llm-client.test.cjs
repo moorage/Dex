@@ -13,6 +13,34 @@ test('getAvailableProvider prefers OpenAI over Anthropic and Gemini', () => {
   assert.equal(provider, 'openai');
 });
 
+test('resolveAuthTarget prefers file-backed Codex ChatGPT auth in auto mode', () => {
+  const target = llmClient.resolveAuthTarget({
+    env: { OPENAI_API_KEY: 'sk-openai' },
+    codexClient: {
+      getChatGPTAuthStatus: () => ({
+        available: true,
+        hasFileBackedAuth: true,
+      }),
+    },
+  });
+
+  assert.equal(target.provider, llmClient.AUTH_MODE_CODEX_CHATGPT);
+});
+
+test('resolveAuthTarget falls back to API-key auth when Codex auth is keyring-only and provider keys exist', () => {
+  const target = llmClient.resolveAuthTarget({
+    env: { OPENAI_API_KEY: 'sk-openai' },
+    codexClient: {
+      getChatGPTAuthStatus: () => ({
+        available: true,
+        hasFileBackedAuth: false,
+      }),
+    },
+  });
+
+  assert.equal(target.provider, 'openai');
+});
+
 test('generateWithOpenAI uses responses API with GPT-5.5 defaults', async () => {
   let requestBody;
 
@@ -54,9 +82,35 @@ test('extractOpenAIResponseText falls back to message content when output_text i
   assert.equal(text, 'First paragraph\n\nSecond paragraph');
 });
 
-test('generateContent error message prefers OPENAI_API_KEY wording first', async () => {
+test('generateContent uses Codex ChatGPT auth when no provider key is configured', async () => {
+  const result = await llmClient.generateContent('Summarize this', {
+    env: {},
+    codexClient: {
+      getChatGPTAuthStatus: () => ({
+        available: true,
+        hasFileBackedAuth: false,
+      }),
+      runStringTask: (options) => {
+        assert.match(options.stdinText, /Summarize this/u);
+        return 'Codex summary';
+      },
+    },
+  });
+
+  assert.equal(result, 'Codex summary');
+});
+
+test('generateContent error message mentions codex login and API keys', async () => {
   await assert.rejects(
-    llmClient.generateContent('Hello', { env: {} }),
-    /Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY/u,
+    llmClient.generateContent('Hello', {
+      env: {},
+      codexClient: {
+        getChatGPTAuthStatus: () => ({
+          available: false,
+          message: 'Codex ChatGPT auth is not available. Run `codex login` and sign in with ChatGPT.',
+        }),
+      },
+    }),
+    /codex login.*OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY/u,
   );
 });

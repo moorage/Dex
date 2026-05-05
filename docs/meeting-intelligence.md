@@ -21,7 +21,7 @@ cd .scripts/meeting-intel && ./install-automation.sh
 ```
 
 This will:
-- Check prerequisites (Node.js, Granola, LLM API key)
+- Check prerequisites (Node.js, Granola, and optional AI auth)
 - Install the 30-minute background sync via macOS Launch Agent
 
 ### 2. Authentication
@@ -30,7 +30,17 @@ Dex uses the same credentials Granola's desktop app stores locally. As long as y
 
 **Requirements:**
 - Granola app installed ([granola.ai](https://granola.ai)) with a paid plan
-- An LLM API key in `.env` (GEMINI_API_KEY, ANTHROPIC_API_KEY, or OPENAI_API_KEY)
+- For AI analysis, either:
+  - ChatGPT-authenticated Codex CLI via `codex login`
+  - or a direct provider key in `.env` (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENAI_API_KEY`)
+
+**Background sync note:** If you want `launchd` automation to use ChatGPT-authenticated Codex CLI, use file-backed Codex auth on your trusted local machine:
+
+```toml
+cli_auth_credentials_store = "file"
+```
+
+Add that to `~/.codex/config.toml`, then run `codex login` again so background jobs can reuse `~/.codex/auth.json`.
 
 ## Data Sources
 
@@ -62,7 +72,7 @@ After setup, `/process-meetings` reads synced files and updates your vault:
 
 ## What Gets Extracted
 
-The background sync uses your LLM API to extract:
+The background sync uses Codex ChatGPT auth or your configured LLM API to extract:
 
 - **Summary** (2-3 sentences)
 - **Key discussion points** with context
@@ -72,6 +82,8 @@ The background sync uses your LLM API to extract:
 - **Pillar classification** based on your `System/pillars.yaml`
 
 **Output location:** `00-Inbox/Meetings/YYYY-MM-DD/meeting-slug.md`
+
+If no AI auth is configured, Dex still writes a basic structured meeting note so the meeting is not lost.
 
 ## Configuration
 
@@ -141,8 +153,9 @@ node .scripts/meeting-intel/sync-from-granola.cjs --force
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │ Background Sync (launchd, every 30 min)              │
-│  - sync-from-granola.cjs → API fetch + LLM analysis │
+│  - sync-from-granola.cjs → API fetch + AI analysis  │
 │  - Auth: reads Granola's local supabase.json         │
+│  - AI auth: Codex ChatGPT or provider API key        │
 │  - Fallback: local cache-v*.json (desktop only)      │
 └──────────────────────┬──────────────────────────────┘
                        │ LLM extraction (Gemini/Anthropic/OpenAI models)

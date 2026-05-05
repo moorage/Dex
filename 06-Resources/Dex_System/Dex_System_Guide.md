@@ -1127,18 +1127,29 @@ People and company pages are lightweight context that's always useful. Meeting n
 
 For hands-off processing, enable automatic mode during onboarding or configure manually:
 
-1. **Choose API provider:**
-   - **Gemini** — Free tier (1500 req/day), best for most users
+1. **Choose auth path:**
+   - **Codex ChatGPT auth** — Uses your local `codex login` session
+   - **Gemini** — Free tier (1500 req/day), best API-key fallback for most users
    - **Anthropic** — Highest quality (~$0.01/meeting)
    - **OpenAI** — Fast and reliable (~$0.01/meeting)
 
-2. **Add API key to `.env`:**
+2. **For Codex ChatGPT auth:**
+   ```bash
+   codex login
+   ```
+
+   For trusted local background automation, prefer file-backed auth in `~/.codex/config.toml`:
+   ```toml
+   cli_auth_credentials_store = "file"
+   ```
+
+3. **For API-key auth, add a key to `.env`:**
    ```bash
    echo "GEMINI_API_KEY=your-key" >> .env
    # or ANTHROPIC_API_KEY or OPENAI_API_KEY
    ```
 
-3. **Enable automation:**
+4. **Enable automation:**
    ```bash
    npm install
    ./.scripts/meeting-intel/install-automation.sh

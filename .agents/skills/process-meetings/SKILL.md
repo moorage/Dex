@@ -17,7 +17,7 @@ hooks:
 
 > **Note for automatic mode users:** If your `meeting_processing.mode` is `automatic` (the default for new installs), meeting notes are written directly to your vault every 30 minutes — you don't need to run this command. Check `System/user-profile.yaml` to see your mode.
 >
-> This command is for **manual mode** users, or to add AI analysis to basic notes created without an LLM key.
+> This command is for **manual mode** users, or to add AI analysis to basic notes created without AI auth.
 
 Process meetings that have been synced from Granola by the background automation. Updates person pages, extracts tasks, and organizes meeting notes.
 
@@ -77,7 +77,7 @@ ls .scripts/meeting-intel/processed-meetings.json
 >
 > **Requirements:**
 > - Granola app installed ([granola.ai](https://granola.ai))
-> - An LLM API key in `.env` (GEMINI_API_KEY, ANTHROPIC_API_KEY, or OPENAI_API_KEY)"
+> - For AI analysis, either `codex login` with ChatGPT auth or an LLM API key in `.env` (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENAI_API_KEY`)"
 
 If user runs `--setup`:
 ```bash
@@ -281,6 +281,9 @@ For each meeting with unextracted tasks:
 > 1. Granola is running during your meetings
 > 2. Background sync is set up (invoke `$process-meetings` with `--setup`)
 > 3. Check logs: `.scripts/logs/meeting-intel.stdout.log`"
+
+**If only basic notes were created:**
+> "Dex synced the meetings, but AI analysis was unavailable. Run `codex login` for ChatGPT auth or configure an API key with `$ai-setup`, then re-run `$process-meetings`."
 
 **If background sync isn't running:**
 > "Background sync appears to be stopped. To restart:

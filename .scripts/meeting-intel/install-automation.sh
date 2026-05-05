@@ -116,8 +116,26 @@ if [ -z "$NODE_PATH" ]; then
 fi
 echo -e "${GREEN}✓${NC} Node.js found at: $NODE_PATH"
 
-if [ ! -f "$VAULT_PATH/.env" ]; then
-    echo -e "${YELLOW}!${NC} Warning: .env file not found. Make sure GEMINI_API_KEY (or another LLM key) is set."
+HAS_PROVIDER_KEY=false
+if [ -f "$VAULT_PATH/.env" ] && grep -Eq '^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY)=' "$VAULT_PATH/.env"; then
+    HAS_PROVIDER_KEY=true
+fi
+
+if [ "$HAS_PROVIDER_KEY" = true ]; then
+    echo -e "${GREEN}✓${NC} Provider API key found in .env"
+elif command -v codex &> /dev/null && codex login status >/dev/null 2>&1; then
+    if [ -f "$HOME/.codex/auth.json" ]; then
+        echo -e "${GREEN}✓${NC} Codex ChatGPT auth found (file-backed auth.json)"
+    else
+        echo -e "${YELLOW}!${NC} Codex is logged in, but launchd automation works best with file-backed auth."
+        echo "    For trusted local background runs, add to ~/.codex/config.toml:"
+        echo '      cli_auth_credentials_store = "file"'
+        echo "    Then run: codex login"
+    fi
+else
+    echo -e "${YELLOW}!${NC} No AI auth found. Background sync can still write basic notes, but AI analysis needs:"
+    echo "    - ChatGPT auth via: codex login"
+    echo "    - or a provider key in .env (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY)"
 fi
 
 # Check for Granola
@@ -193,7 +211,8 @@ echo -e "${GREEN}Installation complete!${NC}"
 echo ""
 echo "What happens now:"
 echo "  • Meetings sync automatically every 30 minutes"
-echo "  • Syncs via Granola's official MCP (includes mobile recordings)"
+echo "  • AI analysis uses Codex ChatGPT auth when available, otherwise direct provider keys if configured"
+echo "  • If no AI auth is configured, Dex still writes basic meeting notes"
 echo "  • Also syncs when you log in or wake your laptop"
 echo "  • /process-meetings now reads synced files (no terminal output)"
 echo ""

@@ -17,9 +17,14 @@ Dex now treats `GPT-5.5` as the premium default instead of Sonnet-era Anthropic 
 * Updated `06-Resources/Dex_System/AI_Model_Options.md` to document `GPT-5.5` as Dex's premium model
 * Added an OpenAI-backed `.scripts/improve-prompt.cjs` and switched `/prompt-improver` guidance from Anthropic-specific instructions to `GPT-5.5`
 * Switched Dex's shared optional-LLM client and AI connection checks to prefer OpenAI `gpt-5.5` before Anthropic fallbacks
+* Added a Codex ChatGPT auth adapter so Dex scripts can reuse `codex login` for local GPT-5.5 work instead of requiring direct API billing
+* Updated meeting-intel, prompt improver, setup docs, and AI status checks to distinguish Codex ChatGPT auth from optional direct-provider API keys
+* Added `docs/codex-chatgpt-auth-execplan.md` as the closure record for the ChatGPT-authenticated Codex CLI migration
 
 **Why you'll care:**
 * Smart routing and model guidance now match the current premium model you asked Dex to use
+* Local Dex workflows can now use your ChatGPT-authenticated Codex CLI session instead of burning API credits by default
+* Background meeting sync now has a clear support story: trusted local file-backed Codex auth or explicit API-key fallback
 
 ---
 
